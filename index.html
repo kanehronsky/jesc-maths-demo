@@ -380,6 +380,8 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
     </div>
     <div class="bp-line" id="g-bpLine"></div>
     <div class="tbl-wrap"><table class="class-table" id="g-bpTable"></table></div>
+    <div class="subhead"><h3>By assessment</h3><p class="sub">Each student counts under the test they started the year on, so every assessment can be checked against its own target.</p></div>
+    <div class="tbl-wrap"><table class="class-table" id="g-bpTest"></table></div>
   </section>
 
   <section class="panel" aria-labelledby="g-listTitle">
@@ -466,6 +468,11 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
         <p><span class="lbl">Rule</span>Average framework growth for every student at a year level, whatever test they sat. Year level comes from the student's own record, not their class or their test.</p>
       </div>
       <div class="rule">
+        <div class="rule-head"><b>Business plan measure by assessment</b><span class="where">By assessment, year level × assessment</span></div>
+        <p><span class="lbl">Rule</span>Each student's year counts under the test they started the year on: their first assessment that year. Their framework growth includes any progress after passing it, because getting a student through a test is that test's job. “Average change on this test” is the percentage change for students who sat it in both semesters. “Passed it” counts every student who scored 90% or more on it that year.</p>
+        <p><span class="lbl">Example</span>A Year 3 student on Foundation scores 80% in Semester One, passes with 93% in Semester Two and moves to Year 1. Their +13 counts under Foundation. Another Year 3 student scores 35% then 52% on Year 1, so 135 → 152 is +17 under Year 1.</p>
+      </div>
+      <div class="rule">
         <div class="rule-head"><b>Change on the same test</b><span class="where">Student list, test summaries</span></div>
         <p><span class="lbl">Rule</span>Only worked out when a student sat the same test at their first and last assessment of the year: last percentage minus first. Students who passed and moved up show “Passed” instead, because their percentage restarts on the new test.</p>
       </div>
@@ -521,6 +528,10 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
       </div>
     </div>
     <div class="tbl-wrap"><table class="class-table" id="sc-bp"></table></div>
+    <div class="subhead"><h3>By assessment</h3><p class="sub">Each student counts under the test they started the year on, so every assessment can be checked against its own target.</p></div>
+    <div class="tbl-wrap"><table class="class-table" id="sc-bpTest"></table></div>
+    <div class="subhead"><h3>Year level × assessment</h3><p class="sub">Average framework growth for students at each year level, split by the test they started the year on. The number in brackets is how many students.</p></div>
+    <div class="tbl-wrap"><table class="class-table" id="sc-bpMatrix"></table></div>
   </section>
 
   <section class="panel" aria-labelledby="sc-yearTitle">
@@ -582,6 +593,11 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
         <p><span class="lbl">Example</span>Year 2 students: one went 55 → 75 on Foundation (+20), one passed Foundation and went 92 → 140 (+48), one went 120 → 131 on Year 1 (+11). The Year 2 average is (20 + 48 + 11) ÷ 3 = +26.3.</p>
       </div>
       <div class="rule">
+        <div class="rule-head"><b>Business plan measure by assessment</b><span class="where">By assessment, year level × assessment</span></div>
+        <p><span class="lbl">Rule</span>Each student's year counts under the test they started the year on: their first assessment that year. Their framework growth includes any progress after passing it, because getting a student through a test is that test's job. “Average change on this test” is the percentage change for students who sat it in both semesters. “Passed it” counts every student who scored 90% or more on it that year.</p>
+        <p><span class="lbl">Example</span>A Year 3 student on Foundation scores 80% in Semester One, passes with 93% in Semester Two and moves to Year 1. Their +13 counts under Foundation. Another Year 3 student scores 35% then 52% on Year 1, so 135 → 152 is +17 under Year 1.</p>
+      </div>
+      <div class="rule">
         <div class="rule-head"><b>Framework score</b><span class="where">Throughout</span></div>
         <p><span class="lbl">Rule</span>Foundation is 0–100, Year 1 is 100–200 and Year 2 is 200–300. A student's framework score is where their test starts on the ladder plus their percentage on it.</p>
       </div>
@@ -630,6 +646,10 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
       </div>
     </div>
     <div class="tbl-wrap"><table class="class-table" id="pg-bp"></table></div>
+    <div class="subhead"><h3>By assessment</h3><p class="sub">Each student counts under the test they started the year on, so every assessment can be checked against its own target.</p></div>
+    <div class="tbl-wrap"><table class="class-table" id="pg-bpTest"></table></div>
+    <div class="subhead"><h3>Year level × assessment</h3><p class="sub">Average framework growth for students at each year level, split by the test they started the year on. The number in brackets is how many students.</p></div>
+    <div class="tbl-wrap"><table class="class-table" id="pg-bpMatrix"></table></div>
   </section>
 
   <section class="panel" aria-labelledby="pg-yearTitle">
@@ -705,6 +725,11 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
       <div class="rule">
         <div class="rule-head"><b>Business plan measure</b><span class="where">Business plan measure by year level</span></div>
         <p><span class="lbl">Rule</span>Average framework growth for every student at that year level across the program, whatever test they sat. The same calculation as the school report, over all schools.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Business plan measure by assessment</b><span class="where">By assessment, year level × assessment</span></div>
+        <p><span class="lbl">Rule</span>Each student's year counts under the test they started the year on: their first assessment that year. Their framework growth includes any progress after passing it, because getting a student through a test is that test's job. “Average change on this test” is the percentage change for students who sat it in both semesters. “Passed it” counts every student who scored 90% or more on it that year.</p>
+        <p><span class="lbl">Example</span>A Year 3 student on Foundation scores 80% in Semester One, passes with 93% in Semester Two and moves to Year 1. Their +13 counts under Foundation. Another Year 3 student scores 35% then 52% on Year 1, so 135 → 152 is +17 under Year 1.</p>
       </div>
     </div>
     <div class="fn-part">
@@ -1203,6 +1228,28 @@ function bpRows(rows, linkYG) {
 }
 const BP_HEAD = `<thead><tr><th>Year level</th><th>Students</th><th>Average framework growth</th><th>Went up</th><th>Passed a test</th><th>On each test (latest)</th></tr></thead>`;
 
+// Business plan by assessment: each student's year counts under the test they started the year on.
+// Their framework growth includes any progress after passing it, because getting them through it is that test's job.
+function bpByTest(rows) {
+  return `<thead><tr><th>Assessment</th><th>Started the year on it</th><th>Average framework growth</th><th>Went up</th><th>Average change on this test</th><th>Passed it</th></tr></thead><tbody>` +
+    TEST_ORDER.map((t) => {
+      const started = rows.filter((r) => r.first && r.first.test === t), s = summarise(started);
+      const twice = rows.map((r) => r.as.filter((a) => a.test === t)).filter((x) => x.length > 1);
+      const passed = rows.filter((r) => r.as.some((a) => a.test === t && a.passed)).length;
+      return `<tr><td>${TESTS[t].name}</td><td class="num">${started.length}</td><td class="num"><b>${s.counted ? signed(s.avgGrowth, r1) : "—"}</b></td><td class="num">${s.counted ? `${s.improved} of ${s.counted}` : "—"}</td><td class="num">${twice.length ? `${signed(avg(twice.map((x) => x[x.length - 1].pct - x[0].pct)), r1)} <span class="sub">(${twice.length})</span>` : "—"}</td><td class="num">${passed}</td></tr>`;
+    }).join("") + "</tbody>";
+}
+// Year level x assessment: average framework growth for students at each year level who started the year on each test.
+function bpMatrix(rows) {
+  const levels = [...new Set(rows.map((r) => r.yl))].sort((a, b) => a - b);
+  const cell = (rr) => { const s = summarise(rr); return s.counted ? `<b>${signed(s.avgGrowth, r1)}</b> <span class="sub">(${s.counted})</span>` : `<span class="sub">—</span>`; };
+  return `<thead><tr><th>Year level</th>${TEST_ORDER.map((t) => `<th>Started on ${TESTS[t].name}</th>`).join("")}<th>All tests</th></tr></thead><tbody>` +
+    levels.map((n) => {
+      const rr = rows.filter((r) => r.yl === n);
+      return `<tr><td>${ylName(n)}</td>${TEST_ORDER.map((t) => `<td class="num">${cell(rr.filter((r) => r.first && r.first.test === t))}</td>`).join("")}<td class="num">${cell(rr)}</td></tr>`;
+    }).join("") + "</tbody>";
+}
+
 function tabsHTML(current) {
   const tabs = [["teacher", "Teacher"], ["yeargroup", "Year group"], ["school", "School"]];
   if (isAdmin()) tabs.push(["program", "Program"]);
@@ -1275,6 +1322,7 @@ function renderGroup() {
     : "";
   $("#g-bpLine").hidden = !isYG();
   $("#g-bpTable").innerHTML = BP_HEAD + "<tbody>" + bpRows(allRows, false) + "</tbody>";
+  $("#g-bpTest").innerHTML = bpByTest(allRows);
 
   // Student list
   $("#g-listTitle").textContent = T ? `Students who sat ${T.name} in ${y}` : `Students in ${y}`;
@@ -1431,6 +1479,8 @@ function renderSchool() {
     [sts.length, `Students assessed in ${y}`],
   ]);
   $("#sc-bp").innerHTML = BP_HEAD + "<tbody>" + bpRows(rows, true) + `<tr class="total"><td><b>Whole school</b></td><td class="num">${rows.length}</td><td class="num"><b>${s.counted ? signed(s.avgGrowth, r1) : "—"}</b></td><td class="num">${s.improved} of ${s.counted}</td><td class="num">${s.passed}</td><td>${onEachTest(rows)}</td></tr></tbody>`;
+  $("#sc-bpTest").innerHTML = bpByTest(rows);
+  $("#sc-bpMatrix").innerHTML = bpMatrix(rows);
   drawSchoolBars();
 
   $("#sc-testsSub").textContent = `Everyone who sat each test in ${y}. Averages are for each semester's sitting.`;
@@ -1534,6 +1584,8 @@ function renderProgram() {
     [`${checks.filter((c) => c.why.length).length} of ${codes.length}`, `Schools marked “Check in” for ${y}`],
   ]);
   $("#pg-bp").innerHTML = BP_HEAD + "<tbody>" + bpRows(rows, false) + `<tr class="total"><td><b>Whole program</b></td><td class="num">${rows.length}</td><td class="num"><b>${signed(s.avgGrowth, r1)}</b></td><td class="num">${s.improved} of ${s.counted}</td><td class="num">${s.passed}</td><td>${onEachTest(rows)}</td></tr></tbody>`;
+  $("#pg-bpTest").innerHTML = bpByTest(rows);
+  $("#pg-bpMatrix").innerHTML = bpMatrix(rows);
   drawProgramBars();
   $("#pg-schools").innerHTML = `<thead><tr><th>School</th><th>Students</th><th>Framework growth</th><th>Went up</th><th>Passed a test</th><th>Questions flagged</th><th></th></tr></thead><tbody>` +
     checks.sort((a, b) => b.why.length - a.why.length || a.s.avgGrowth - b.s.avgGrowth).map((c) =>
