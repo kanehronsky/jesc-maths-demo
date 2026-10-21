@@ -1,0 +1,1643 @@
+<!doctype html><html lang="en-AU"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JESC Maths Reports</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;600;700&display=swap">
+<style>
+/* Layout: one reading column of report panels. Teacher view first; each student opens in the same page. */
+:root {
+  --bg: #F2F5F5;
+  --surface: #FFFFFF;
+  --ink: #16232A;
+  --ink-2: #4A5A61;
+  --muted: #74858B;
+  --line: #DCE3E5;
+  --track: #E9EEEF;
+  --accent: #0E6A70;
+  --accent-soft: #93C2C4;
+  --on-accent: #FFFFFF;
+  --stop: #A95A14;
+  --stop-soft: #F6E6D4;
+  --suggest: #5B4FA8;
+  --suggest-soft: #ECE9F8;
+  --warn: #8A6100;
+  --warn-soft: #FBF0D0;
+  --crit: #B3261E;
+  --on-crit: #FFFFFF;
+  --font-display: "Lexend", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1619; --surface: #152025; --ink: #E3ECEE; --ink-2: #A9B8BD; --muted: #7F9095;
+    --line: #26353B; --track: #1F2C31; --accent: #5DB7BC; --accent-soft: #2E6064; --on-accent: #0E1619;
+    --stop: #E5A060; --stop-soft: #3A2A1B; --suggest: #A99FEA; --suggest-soft: #262241;
+    --warn: #E8C15A; --warn-soft: #3A3115; --crit: #F2827A; --on-crit: #1A0E0D;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1619; --surface: #152025; --ink: #E3ECEE; --ink-2: #A9B8BD; --muted: #7F9095;
+  --line: #26353B; --track: #1F2C31; --accent: #5DB7BC; --accent-soft: #2E6064; --on-accent: #0E1619;
+  --stop: #E5A060; --stop-soft: #3A2A1B; --suggest: #A99FEA; --suggest-soft: #262241;
+  --warn: #E8C15A; --warn-soft: #3A3115; --crit: #F2827A; --on-crit: #1A0E0D;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+.wrap { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; }
+h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 18px; font-weight: 600; }
+h3 { font-size: 15px; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--accent); }
+.eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Header */
+.crumbs { font-size: 14px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; color: var(--muted); }
+.crumbs a { font-weight: 700; text-decoration: none; }
+.crumbs a:hover { text-decoration: underline; }
+.head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px 24px; }
+.head .who { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--ink-2); font-size: 14px; }
+.head-tools { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.type-badge { display: flex; align-items: baseline; gap: 10px; border: 2px solid var(--accent); border-radius: 8px; padding: 6px 14px; background: var(--surface); }
+.type-badge span { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-2); font-weight: 700; }
+.type-badge strong { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--accent); }
+@media (max-width: 720px) { .head-tools { align-items: flex-start; } }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-2); background: var(--surface); white-space: nowrap; }
+.chip.suggest { color: var(--suggest); background: var(--suggest-soft); border-color: transparent; }
+.chip.aac { color: var(--accent); border-color: var(--accent); }
+
+/* Panels */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.panel.is-suggest { border-style: dashed; border-color: color-mix(in oklab, var(--suggest) 45%, var(--line)); }
+.panel-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+.panel-head .titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.sub { color: var(--ink-2); font-size: 14px; }
+
+/* Level hero */
+.hero { display: grid; grid-template-columns: minmax(220px, 1fr) 2fr; gap: 0; padding: 0; overflow: hidden; }
+.hero .level { background: var(--accent); color: var(--on-accent); padding: 22px 24px; display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+.hero .level .eyebrow { color: inherit; opacity: 0.85; }
+.hero .level .big { font-family: var(--font-display); font-weight: 700; font-size: 26px; line-height: 1.2; }
+.hero .level .big b { font-size: 64px; display: block; line-height: 1; letter-spacing: -0.02em; }
+.hero .level .delta { font-size: 14px; opacity: 0.9; }
+.hero .side { padding: 20px 24px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.targets { display: flex; flex-wrap: wrap; gap: 8px; }
+.target { border: 1px solid var(--stop); background: var(--stop-soft); border-radius: 8px; padding: 8px 12px; display: flex; flex-direction: column; min-width: 96px; }
+.target strong { font-family: var(--font-display); font-weight: 600; }
+.target span { font-size: 13px; color: var(--ink-2); }
+.target span + span { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--stop); }
+.target.gap { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 10%, var(--surface)); }
+.target.gap span + span { color: var(--accent); }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 14px; color: var(--ink-2); }
+.facts b { color: var(--ink); }
+
+/* Controls */
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; flex-wrap: wrap; }
+.seg button { font: inherit; font-size: 13px; padding: 6px 12px; border: 0; background: var(--surface); color: var(--ink-2); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); font-weight: 700; }
+.seg-lg button { font-size: 15px; padding: 8px 18px; }
+button:focus-visible, [tabindex]:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); cursor: pointer; }
+.check input { accent-color: var(--accent); }
+.field { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); font-weight: 700; }
+select { font: inherit; font-size: 14px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); }
+
+/* Charts */
+.chart { width: 100%; min-height: 200px; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.axis-text { fill: var(--muted); font-size: 12px; font-family: var(--font-body); }
+.grid-line { stroke: var(--line); stroke-width: 1; }
+.zero-line { stroke: var(--muted); stroke-width: 1; }
+.pt-hit { fill: transparent; cursor: pointer; }
+.bar-hit { fill: transparent; cursor: pointer; }
+details.table-view summary { cursor: pointer; font-size: 13px; color: var(--ink-2); }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { padding: 6px 12px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-weight: 700; color: var(--ink-2); font-size: 13px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 14px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+.lg-line { width: 18px !important; height: 0 !important; border-top: 3px solid var(--accent); border-radius: 0 !important; vertical-align: 3px !important; }
+.lg-ghost { width: 18px !important; height: 0 !important; border-top: 2px dashed var(--muted); border-radius: 0 !important; vertical-align: 3px !important; }
+.lg-full { background: var(--accent); }
+.lg-part { background: var(--accent-soft); }
+.lg-stop { background: var(--stop); }
+.lg-none { border: 1px dashed var(--muted); }
+.lg-prev { width: 2px !important; height: 14px !important; background: var(--ink); border-radius: 0 !important; vertical-align: -3px !important; }
+.summary-line { font-size: 14px; color: var(--ink); }
+.summary-line b { font-variant-numeric: tabular-nums; }
+.subhead { display: flex; flex-direction: column; gap: 2px; border-top: 1px solid var(--line); padding-top: 14px; }
+
+/* School view: item signals and comparison bars */
+.sig-grid { border-collapse: separate; border-spacing: 3px; }
+.sig-grid th { padding: 0 6px 0 0; border: 0; font-size: 12px; text-align: right; }
+.sig-grid thead th { text-align: center; padding: 0 0 2px; font-weight: 400; color: var(--muted); }
+.sig-grid td { padding: 0; border: 0; }
+.sig { width: 24px; height: 24px; border-radius: 4px; display: grid; place-items: center; font-size: 11px; font-weight: 700; cursor: pointer; }
+.sig.ok { background: color-mix(in oklab, var(--accent) 30%, var(--surface)); }
+.sig.below { background: var(--warn-soft); color: var(--warn); outline: 1px solid var(--warn); outline-offset: -1px; }
+.sig.well { background: var(--crit); color: var(--on-crit); }
+.sig.few { background: transparent; border: 1px dashed var(--line); cursor: default; }
+.sig.sel { box-shadow: 0 0 0 2px var(--ink); }
+.sig-key { display: inline-grid !important; place-items: center; width: 16px !important; height: 16px !important; font-size: 9px; font-style: normal; font-weight: 700; vertical-align: -3px !important; }
+.sig-key.ok { background: color-mix(in oklab, var(--accent) 30%, var(--surface)); }
+.sig-key.below { background: var(--warn-soft); color: var(--warn); outline: 1px solid var(--warn); outline-offset: -1px; }
+.sig-key.well { background: var(--crit); color: var(--on-crit); }
+.sig-key.few { border: 1px dashed var(--muted); }
+.lg-bench { width: 3px !important; height: 14px !important; background: var(--ink); border-radius: 0 !important; vertical-align: -3px !important; }
+.flags .tag.warn { background: var(--warn-soft); color: var(--warn); }
+.flags .tag.crit { background: var(--crit); color: var(--on-crit); }
+.compare { display: flex; flex-direction: column; gap: 14px; }
+.cmp-year { display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: start; }
+.cmp-year > b { font-family: var(--font-display); padding-top: 2px; }
+.cmp-rows { display: flex; flex-direction: column; gap: 4px; }
+.cmp-row { display: grid; grid-template-columns: 110px 1fr 150px; gap: 10px; align-items: center; font-size: 13px; }
+.cmp-row .who-lbl { color: var(--ink-2); }
+.cmp-row .track { height: 16px; }
+.cmp-row.bench .fill { background: var(--muted); }
+.cmp-row.school .fill { background: var(--accent); }
+.cmp-row .val { font-variant-numeric: tabular-nums; }
+.parts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 720px) { .parts { grid-template-columns: 1fr; } .cmp-row { grid-template-columns: 80px 1fr; } .cmp-row .val { grid-column: 2; } }
+
+/* Footnotes: how the flags on each page are worked out */
+.footnote { border-top: 2px solid var(--line); padding-top: 18px; display: flex; flex-direction: column; gap: 22px; font-size: 14px; }
+.fn-part { display: flex; flex-direction: column; gap: 10px; }
+.fn-part > h3 { font-size: 16px; }
+.rules { display: flex; flex-direction: column; gap: 10px; }
+.rule { border-left: 3px solid var(--line); padding: 2px 0 2px 14px; display: flex; flex-direction: column; gap: 6px; max-width: 78ch; }
+.rule-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.rule-head b { font-family: var(--font-display); font-weight: 600; }
+.rule-head .where { font-size: 12px; color: var(--muted); }
+.rule-head .tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 4px; background: var(--stop-soft); color: var(--stop); }
+.rule-head .tag.info { background: var(--track); color: var(--ink-2); }
+.rule-head .tag.warn { background: var(--warn-soft); color: var(--warn); }
+.rule-head .sig-key { width: 20px !important; height: 20px !important; border-radius: 4px; font-size: 10px; }
+.rule p { color: var(--ink); }
+.rule .lbl { display: inline-block; min-width: 0; margin-right: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); }
+.steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 4px; }
+.examples td, .examples th { white-space: nowrap; }
+.calc { display: flex; flex-wrap: wrap; gap: 10px 18px; }
+.calc input { font: inherit; font-size: 14px; width: 80px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); }
+.calc-out { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; background: var(--surface); display: flex; flex-direction: column; gap: 6px; max-width: 78ch; }
+
+/* Viewer switch (wireframe only) */
+.viewer { max-width: 980px; margin: 0 auto 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 10px 14px; border: 1px dashed color-mix(in oklab, var(--suggest) 45%, var(--line)); border-radius: 10px; background: var(--suggest-soft); }
+.viewer .field { color: var(--suggest); }
+.chip.admin { color: var(--suggest); border-color: var(--suggest); }
+.status.warn { background: var(--warn-soft); color: var(--warn); }
+.status.crit { background: var(--crit); color: var(--on-crit); }
+.status.info { background: var(--track); color: var(--ink-2); }
+.status.prog { background: var(--suggest-soft); color: var(--suggest); text-transform: none; letter-spacing: 0; font-size: 12px; }
+h2 .status { vertical-align: 3px; }
+.sig.tagged { color: var(--suggest); font-size: 10px; outline: 2px solid var(--suggest); outline-offset: -2px; }
+.sig-key.tagged { outline: 2px solid var(--suggest); outline-offset: -2px; color: var(--suggest); background: var(--surface); }
+select:disabled { opacity: 1; color: var(--ink-2); background: var(--track); }
+.ramp { display: inline-flex; align-items: center; gap: 4px; }
+.ramp i { margin: 0 !important; }
+.lg-dot { width: 9px !important; height: 9px !important; border-radius: 50% !important; background: var(--ink); opacity: .75; }
+.sig-grid tbody th { white-space: nowrap; }
+
+/* Report-level tabs and pickers */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tabs a { font-family: var(--font-display); font-weight: 600; font-size: 15px; text-decoration: none; color: var(--ink-2); padding: 8px 14px; border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.tabs a:hover { color: var(--ink); }
+.tabs a[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); }
+.pickers { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
+@media (max-width: 720px) { .pickers { justify-content: flex-start; } }
+
+/* Class list */
+.class-table { width: 100%; }
+.class-table tbody tr { cursor: pointer; }
+.class-table tbody tr:hover { background: var(--track); }
+.class-table td, .class-table th { padding: 10px 8px; vertical-align: middle; }
+.class-table a { font-weight: 700; text-decoration: none; }
+.class-table a:hover { text-decoration: underline; }
+.lvl { display: flex; align-items: center; gap: 10px; }
+.lvl b { font-family: var(--font-display); font-size: 18px; min-width: 22px; text-align: right; }
+.lvl .track { width: 90px; }
+.delta-up { color: var(--accent); font-weight: 700; }
+.delta-flat { color: var(--stop); font-weight: 700; }
+.status { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 4px; background: var(--stop-soft); color: var(--stop); }
+
+/* Item bars (student) */
+.bars { display: flex; flex-direction: column; gap: 3px; }
+.bar-row { display: grid; grid-template-columns: 64px 1fr 52px; align-items: center; gap: 10px; font-size: 13px; padding: 1px 0; border-radius: 4px; }
+.bar-row:hover { background: var(--track); }
+.bar-label { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.track { position: relative; height: 14px; background: var(--track); border-radius: 0 4px 4px 0; }
+.fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent-soft); border-radius: 0 4px 4px 0; }
+.lvl .fill, .bar-row.full .fill { background: var(--accent); }
+.bar-row.stop .fill { background: var(--stop); }
+.bar-row.none .track { background: transparent; border: 1px dashed var(--line); }
+.bar-row.none .bar-label, .bar-row.none .bar-val { color: var(--muted); }
+.bar-val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+.prev { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); margin-left: -1px; }
+.bars:not(.show-prev) .prev { display: none; }
+.stop-group { border-left: 3px solid var(--stop); background: var(--stop-soft); border-radius: 0 6px 6px 0; padding: 6px 8px 6px 7px; margin-left: -10px; display: flex; flex-direction: column; gap: 3px; }
+.stop-cap { font-size: 12px; font-weight: 700; color: var(--stop); }
+.level-mark { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--accent); margin: 4px 0; }
+.level-mark::after { content: ""; flex: 1; border-top: 2px solid var(--accent); }
+.more { font: inherit; font-size: 13px; color: var(--accent); background: none; border: 0; padding: 6px 0; cursor: pointer; text-align: left; }
+
+/* Heatmap */
+.heat td, .heat th { text-align: center; padding: 0; border: 0; }
+.heat th { padding: 4px 6px; font-weight: 700; }
+.heat th.rowh { text-align: right; padding-right: 10px; color: var(--ink-2); font-weight: 400; }
+.heat td div { margin: 2px; width: 64px; height: 26px; display: grid; place-items: center; border-radius: 4px; font-size: 12px; font-weight: 700; }
+.heat td div.nr { color: var(--muted); font-weight: 400; background: transparent; border: 1px dashed var(--line); }
+.heat td div.st { outline: 2px solid var(--stop); outline-offset: -2px; }
+
+/* Stats, flags, shared targets */
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.stats.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.stat { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; background: var(--surface); }
+.stat .v { font-family: var(--font-display); font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat .k { font-size: 13px; color: var(--ink-2); }
+.flags { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.flags li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; font-size: 14px; }
+.flags .tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 4px; background: var(--stop-soft); color: var(--stop); white-space: nowrap; }
+.flags .tag.info { background: var(--track); color: var(--ink-2); }
+.shared { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.shared li { display: grid; grid-template-columns: 76px 90px 1fr; gap: 10px; align-items: center; font-size: 14px; }
+.shared .it { font-family: var(--font-display); font-weight: 600; }
+.shared .cnt { color: var(--ink-2); font-size: 13px; }
+.names { display: flex; flex-wrap: wrap; gap: 6px; }
+.names a { font-size: 13px; font-weight: 700; text-decoration: none; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--line); }
+.names a:hover { border-color: var(--accent); }
+
+.notes { font-size: 13px; color: var(--ink-2); display: flex; flex-direction: column; gap: 4px; max-width: 70ch; }
+
+#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 13px; padding: 6px 10px; border-radius: 6px; max-width: 260px; line-height: 1.35; }
+
+@media (max-width: 720px) {
+  .hero { grid-template-columns: 1fr; }
+  .stats, .stats.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  h1 { font-size: 24px; }
+  .bar-row { grid-template-columns: 54px 1fr 44px; gap: 8px; }
+  .shared li { grid-template-columns: 64px 1fr; }
+  .shared .names { grid-column: 1 / -1; }
+  .lvl .track { width: 70px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bar-row .fill { transition: width 0.35s ease; }
+}
+
+/* ---------- JESC Maths additions ---------- */
+:root { --band-y: #E2B000; --band-y-ink: #3A2E00; --band-g: #2F8F5B; --band-g-ink: #FFFFFF; --band-r: #C23B33; --band-r-ink: #FFFFFF; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --band-y: #F0C53A; --band-y-ink: #2A2000; --band-g: #4FB37C; --band-g-ink: #0E1619; --band-r: #EE7A72; --band-r-ink: #1A0E0D; } }
+:root[data-theme="dark"] { --band-y: #F0C53A; --band-y-ink: #2A2000; --band-g: #4FB37C; --band-g-ink: #0E1619; --band-r: #EE7A72; --band-r-ink: #1A0E0D; }
+.band-chip { display: inline-block; min-width: 42px; text-align: center; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; font-variant-numeric: tabular-nums; }
+.band-chip.yellow, .band-seg.yellow { background: var(--band-y); color: var(--band-y-ink); }
+.band-chip.green, .band-seg.green { background: var(--band-g); color: var(--band-g-ink); }
+.band-chip.red, .band-seg.red { background: var(--band-r); color: var(--band-r-ink); }
+.band-key { display: inline-block !important; width: 14px !important; height: 10px !important; border-radius: 2px; vertical-align: -1px; }
+.band-key.yellow { background: var(--band-y); } .band-key.green { background: var(--band-g); } .band-key.red { background: var(--band-r); }
+.test-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.bp-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+.bp-line b { font-family: var(--font-display); font-size: 34px; color: var(--accent); }
+.bp-line span { color: var(--ink-2); font-size: 14px; }
+tr.total td { border-top: 2px solid var(--line); background: var(--track); }
+.band-rows { display: flex; flex-direction: column; gap: 10px; }
+.band-row { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: center; }
+.band-lbl { display: flex; flex-direction: column; font-weight: 700; font-size: 14px; }
+.band-lbl .sub { font-weight: 400; font-size: 12px; }
+.band-bar { display: flex; gap: 2px; height: 28px; border-radius: 6px; overflow: hidden; }
+.band-seg { display: grid; place-items: center; font-size: 13px; font-weight: 700; min-width: 24px; }
+.dumbbells, .bars { display: flex; flex-direction: column; gap: 3px; }
+.q-section { font-size: 12px; font-weight: 700; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 10px; }
+.q-gap { height: 6px; }
+.db-row { display: grid; grid-template-columns: minmax(140px, 260px) 1fr 96px; gap: 10px; align-items: center; font-size: 13px; padding: 2px 0; border-radius: 4px; }
+.db-row:hover { background: var(--track); }
+.db-track { position: relative; height: 16px; background: var(--track); border-radius: 8px; }
+.db-line { position: absolute; top: 7px; height: 2px; background: var(--accent); }
+.db-line.down { background: var(--band-r); }
+.db-dot { position: absolute; top: 2px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; border: 2px solid var(--accent); }
+.db-dot.s1 { background: var(--surface); }
+.db-dot.s2 { background: var(--accent); }
+.dot-key { display: inline-block !important; width: 11px !important; height: 11px !important; border-radius: 50% !important; border: 2px solid var(--accent); vertical-align: -1px; }
+.dot-key.s1 { background: var(--surface); } .dot-key.s2 { background: var(--accent); }
+.bar-row { grid-template-columns: minmax(140px, 260px) 1fr 52px !important; }
+.bar-row.none-mark .bar-val { color: var(--band-r); }
+.chip.test-F, .chip.test-Y1, .chip.test-Y2 { font-weight: 700; }
+.target { min-width: 150px; max-width: 220px; }
+.hero .level .big { display: flex; flex-direction: column; gap: 4px; font-size: 18px; }
+@media (max-width: 720px) {
+  .db-row, .bar-row { grid-template-columns: 1fr 70px !important; }
+  .db-row .db-track, .bar-row .track { grid-column: 1 / -1; grid-row: 2; }
+  .band-row { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="viewer" role="region" aria-label="Wireframe viewer switch">
+  <label class="field" for="role">Viewing as <select id="role"></select></label>
+  <span class="sub">Wireframe only: switch to see what each person can access.</span>
+</div>
+
+<!-- ============ GROUP VIEW (teacher or year group) ============ -->
+<div class="wrap" id="groupView">
+  <nav class="tabs" id="g-tabs" aria-label="Report level"></nav>
+  <header class="head">
+    <div class="who">
+      <span class="eyebrow" id="g-eyebrow"></span>
+      <h1 id="g-title"></h1>
+      <div class="meta" id="g-meta"></div>
+    </div>
+    <div class="head-tools">
+      <span class="chip">Wireframe · demo data only</span>
+      <div class="pickers">
+        <label class="field" for="g-school">School <select id="g-school"></select></label>
+        <label class="field" for="g-pick"><span id="g-pickLabel">Class</span> <select id="g-pick"></select></label>
+        <div class="seg seg-lg" role="group" aria-label="School year" id="g-years"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="test-bar">
+    <span class="field">Test</span>
+    <div class="seg" role="group" aria-label="Test" id="g-tests"></div>
+  </div>
+
+  <section class="stats four" id="g-stats" aria-label="Summary"></section>
+
+  <section class="panel" id="g-bpPanel" aria-labelledby="g-bpTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="g-bpTitle">Business plan measure</h2>
+        <p class="sub" id="g-bpSub"></p>
+      </div>
+    </div>
+    <div class="bp-line" id="g-bpLine"></div>
+    <div class="tbl-wrap"><table class="class-table" id="g-bpTable"></table></div>
+  </section>
+
+  <section class="panel" aria-labelledby="g-listTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="g-listTitle">Students</h2>
+        <p class="sub" id="g-listSub"></p>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table class="class-table" id="g-students"></table></div>
+  </section>
+
+  <section class="panel is-suggest" id="g-byClassPanel" aria-labelledby="g-byClassTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="g-byClassTitle">By class</h2>
+        <p class="sub" id="g-byClassSub"></p>
+      </div>
+      <span class="chip suggest">Suggested</span>
+    </div>
+    <div class="tbl-wrap"><table class="class-table" id="g-byClass"></table></div>
+  </section>
+
+  <section class="panel" aria-labelledby="g-bandTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="g-bandTitle">Results by colour band</h2>
+        <p class="sub" id="g-bandSub"></p>
+      </div>
+    </div>
+    <div class="legend"><span><i class="band-key yellow"></i>90% or higher (passed)</span><span><i class="band-key green"></i>50–89.9%</span><span><i class="band-key red"></i>Under 50%</span></div>
+    <div class="band-rows" id="g-bands"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="g-qTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="g-qTitle">Question progress</h2>
+        <p class="sub" id="g-qSub"></p>
+      </div>
+    </div>
+    <div class="legend" id="g-qLegend"><span><i class="dot-key s1"></i>Semester One</span><span><i class="dot-key s2"></i>Semester Two</span></div>
+    <div class="dumbbells" id="g-questions"></div>
+  </section>
+
+  <section class="panel is-suggest" aria-labelledby="g-sharedTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="g-sharedTitle">Shared teaching targets</h2>
+        <p class="sub" id="g-sharedSub"></p>
+      </div>
+      <span class="chip suggest">Suggested</span>
+    </div>
+    <ul class="shared" id="g-shared"></ul>
+  </section>
+
+  <section class="panel is-suggest" aria-labelledby="g-flagTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="g-flagTitle">Students not moving up</h2>
+        <p class="sub">Students whose framework score is the same as, or lower than, at their first assessment of the year.</p>
+      </div>
+      <span class="chip suggest">Suggested</span>
+    </div>
+    <ul class="flags" id="g-flags"></ul>
+  </section>
+
+  <footer class="notes" id="g-notes"></footer>
+  <aside class="footnote" aria-label="How the numbers on this page are worked out">
+    <p class="eyebrow">Footnote · How the numbers on this page are worked out</p>
+    <div class="rules">
+      <div class="rule">
+        <div class="rule-head"><b>Framework score</b><span class="where">Business plan measure, student list, all-tests summary</span></div>
+        <p><span class="lbl">Rule</span>The three tests sit on one ladder of 300 points. Foundation is 0–100, Year 1 is 100–200 and Year 2 is 200–300. A student's framework score is where their test starts on the ladder plus their percentage on it.</p>
+        <p><span class="lbl">Example</span>65% on Foundation is 65. 40% on Year 1 is 140. 72% on Year 2 is 272.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Framework growth</b><span class="where">Business plan measure, student list, summary numbers</span></div>
+        <p><span class="lbl">Rule</span>Framework score at the student's last assessment of the year minus their framework score at their first. A student needs 2 assessments in the year to be counted.</p>
+        <p><span class="lbl">Example</span>55% then 75% on Foundation is 55 → 75, so +20. A student who passes Foundation with 92% and then scores 40% on Year 1 goes 92 → 140, so +48. Passing shows as progress, not as a drop.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Business plan measure</b><span class="where">Year group and school reports</span></div>
+        <p><span class="lbl">Rule</span>Average framework growth for every student at a year level, whatever test they sat. Year level comes from the student's own record, not their class or their test.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Change on the same test</b><span class="where">Student list, test summaries</span></div>
+        <p><span class="lbl">Rule</span>Only worked out when a student sat the same test at their first and last assessment of the year: last percentage minus first. Students who passed and moved up show “Passed” instead, because their percentage restarts on the new test.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><span class="band-key yellow"></span><span class="band-key green"></span><span class="band-key red"></span><b>Colour bands</b><span class="where">Results by colour band, student list</span></div>
+        <p><span class="lbl">Rule</span>The same bands as the scoring sheets. Yellow is 90% or higher, which is a pass. Green is 50–89.9%. Red is under 50%.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Passed</b><span class="where">Summary numbers, school and program tables</span></div>
+        <p><span class="lbl">Rule</span>90% or higher on a test. The student sits the next test at their next assessment. Passing Year 2 completes the framework.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Question progress</b><span class="where">Question progress</span></div>
+        <p><span class="lbl">Rule</span>For one test: the average share of marks on each question in Semester One and in Semester Two. Only students who sat that test in both semesters are counted, so both dots describe the same students.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Teaching targets</b><span class="where">Shared teaching targets, student list</span></div>
+        <p><span class="lbl">Rule</span>Every question below full marks on the student's latest assessment. A shared teaching target is a question that's a target for 2 or more students on the same test. The 6 questions shared by the most students are shown.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><span class="status">No gain</span><b>Students not moving up</b><span class="where">Student list, Students not moving up</span></div>
+        <p><span class="lbl">Rule</span>Framework growth of 0 or less across the year. Program administrators see how many, never who.</p>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ============ SCHOOL VIEW ============ -->
+<div class="wrap" id="schoolView" hidden>
+  <nav class="tabs" id="sc-tabs" aria-label="Report level"></nav>
+  <header class="head">
+    <div class="who">
+      <span class="eyebrow">JESC Maths · School report</span>
+      <h1 id="sc-title"></h1>
+      <div class="meta" id="sc-meta"></div>
+    </div>
+    <div class="head-tools">
+      <span class="chip">Wireframe · demo data only</span>
+      <div class="pickers">
+        <label class="field" for="sc-school">School <select id="sc-school"></select></label>
+        <div class="seg seg-lg" role="group" aria-label="School year" id="sc-years"></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="stats four" id="sc-stats" aria-label="School summary"></section>
+
+  <section class="panel" aria-labelledby="sc-bpTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="sc-bpTitle">Business plan measure by year level</h2>
+        <p class="sub">Average framework growth for each year level, across every test. Select a year level to open its report.</p>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table class="class-table" id="sc-bp"></table></div>
+  </section>
+
+  <section class="panel" aria-labelledby="sc-yearTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="sc-yearTitle">Framework growth year by year</h2>
+        <p class="sub">Average framework growth per student in each school year.</p>
+      </div>
+    </div>
+    <div class="chart" id="sc-yearChart" role="img" aria-label="Bar chart of average framework growth per student each year"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="sc-testsTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="sc-testsTitle">Each test this year</h2>
+        <p class="sub" id="sc-testsSub"></p>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table class="class-table" id="sc-tests"></table></div>
+  </section>
+
+  <section class="panel" aria-labelledby="sc-secTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="sc-secTitle">Question secured rates</h2>
+        <p class="sub">For each question: of the students who sat this test in both semesters and didn't have full marks in Semester One, how many had full marks by Semester Two. Darker means more secured it.</p>
+      </div>
+      <div class="seg" role="group" aria-label="Test" id="sc-testPick"></div>
+    </div>
+    <div class="legend">
+      <span class="ramp"><span>0%</span><i style="background:color-mix(in oklab, var(--accent) 10%, var(--surface))"></i><i style="background:color-mix(in oklab, var(--accent) 55%, var(--surface))"></i><i style="background:var(--accent)"></i><span>100%</span></span>
+      <span><i class="sig-key few"></i>Fewer than 3 students</span>
+      <span><i class="sig-key tagged">P</i>Hard across the whole program</span>
+    </div>
+    <div class="tbl-wrap"><table class="sig-grid" id="sc-grid"></table></div>
+    <div class="subhead"><h3 id="sc-hardTitle">Hardest questions</h3></div>
+    <ul class="flags" id="sc-hard"></ul>
+  </section>
+
+  <section class="panel is-suggest" aria-labelledby="sc-classTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="sc-classTitle">Classes</h2>
+        <p class="sub" id="sc-classSub"></p>
+      </div>
+      <span class="chip suggest">Suggested</span>
+    </div>
+    <div class="tbl-wrap"><table class="class-table" id="sc-classes"></table></div>
+  </section>
+
+  <footer class="notes"><p id="sc-ownNote"></p></footer>
+  <aside class="footnote" aria-label="How the numbers on this page are worked out">
+    <p class="eyebrow">Footnote · How the numbers on this page are worked out</p>
+    <div class="rules">
+      <div class="rule">
+        <div class="rule-head"><b>Business plan measure</b><span class="where">Business plan measure by year level</span></div>
+        <p><span class="lbl">Rule</span>For each year level: the average framework growth of every student who had 2 assessments that year, whatever test they sat. “On each test” shows which test those students were on at their latest assessment.</p>
+        <p><span class="lbl">Example</span>Year 2 students: one went 55 → 75 on Foundation (+20), one passed Foundation and went 92 → 140 (+48), one went 120 → 131 on Year 1 (+11). The Year 2 average is (20 + 48 + 11) ÷ 3 = +26.3.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Framework score</b><span class="where">Throughout</span></div>
+        <p><span class="lbl">Rule</span>Foundation is 0–100, Year 1 is 100–200 and Year 2 is 200–300. A student's framework score is where their test starts on the ladder plus their percentage on it.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Secured rate</b><span class="where">Question secured rates, hardest questions</span></div>
+        <p><span class="lbl">Rule</span>Counts students who sat the same test in both semesters and had less than full marks on the question in Semester One. The secured rate is the share of them with full marks in Semester Two. Students who passed in Semester One move to a new test, so they aren't counted for the old one.</p>
+        <p><span class="lbl">Example</span>6 students sat Foundation in both semesters and dropped marks on “Subtract” in Semester One. 4 had full marks in Semester Two, so the secured rate is 4 ÷ 6 = 67%.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Hardest questions</b><span class="where">Hardest questions</span></div>
+        <p><span class="lbl">Rule</span>The 5 questions on the chosen test with the lowest secured rate that year, from questions with at least 3 students counted.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><span class="status prog">Hard across the whole program</span><b>Program tag</b><span class="where">Grid, hardest questions</span></div>
+        <p><span class="lbl">Rule</span>Program administrators choose which questions get this tag. Schools see the tag only, with no numbers. In the demo, Year 1 “Halved paper: Correct description” is tagged.</p>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ============ PROGRAM VIEW ============ -->
+<div class="wrap" id="programView" hidden>
+  <nav class="tabs" id="pg-tabs" aria-label="Report level"></nav>
+  <header class="head">
+    <div class="who">
+      <span class="eyebrow">JESC Maths · Program report</span>
+      <h1>Whole program</h1>
+      <div class="meta" id="pg-meta"></div>
+    </div>
+    <div class="head-tools">
+      <div class="pickers">
+        <span class="chip">Wireframe · demo data only</span>
+        <span class="chip admin">Program administrators only</span>
+      </div>
+      <div class="seg seg-lg" role="group" aria-label="School year" id="pg-years"></div>
+    </div>
+  </header>
+
+  <section class="stats four" id="pg-stats" aria-label="Program summary"></section>
+
+  <section class="panel" aria-labelledby="pg-bpTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="pg-bpTitle">Business plan measure by year level</h2>
+        <p class="sub">Average framework growth for each year level across the whole program, whatever test students sat.</p>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table class="class-table" id="pg-bp"></table></div>
+  </section>
+
+  <section class="panel" aria-labelledby="pg-yearTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="pg-yearTitle">Framework growth year by year</h2>
+        <p class="sub">Average framework growth per student across the program. Each dot beside a bar is one school.</p>
+      </div>
+    </div>
+    <div class="legend"><span><i class="lg-full" style="opacity:.35"></i>Whole program</span><span><i class="lg-dot"></i>One school</span></div>
+    <div class="chart" id="pg-yearChart" role="img" aria-label="Bar chart of framework growth per year with a dot for each school"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="pg-schoolsTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="pg-schoolsTitle">Schools</h2>
+        <p class="sub">Schools marked “Check in” have 2 or more flagged questions, or students whose framework growth was 8 points or more below the program average. Select a school to open its report.</p>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table class="class-table" id="pg-schools"></table></div>
+  </section>
+
+  <section class="panel" aria-labelledby="pg-sigTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="pg-sigTitle">Question signals by school</h2>
+        <p class="sub" id="pg-sigSub"></p>
+      </div>
+      <div class="seg" role="group" aria-label="Test" id="pg-testPick"></div>
+    </div>
+    <div class="legend">
+      <span><i class="sig-key ok"></i>Similar to or better than the program</span>
+      <span><i class="sig-key below">!</i>Below: behind, with less than a 1 in 10 chance it's luck</span>
+      <span><i class="sig-key well">!!</i>Well below: behind, with less than a 1 in 50 chance it's luck</span>
+      <span><i class="sig-key few"></i>Fewer than 3 students</span>
+    </div>
+    <div class="tbl-wrap"><table class="sig-grid" id="pg-grid"></table></div>
+    <div class="subhead"><h3 id="pg-detailTitle"></h3></div>
+    <div class="compare" id="pg-detail"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="pg-hardTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="pg-hardTitle">Questions that are hard everywhere</h2>
+        <p class="sub">The lowest program-wide secured rates on each test, from questions with at least 20 students counted. A question that's low in most schools may point to the question, its resources or the training, rather than to any one school.</p>
+      </div>
+    </div>
+    <ul class="flags" id="pg-hard"></ul>
+  </section>
+
+  <footer class="notes">
+    <p><b>Who can see this.</b> Only program administrators. They can see every school, year level and class, but never an individual student. School staff see their own school only.</p>
+  </footer>
+  <aside class="footnote" aria-label="How the flags on this page are worked out">
+    <p class="eyebrow">Footnote · How the flags on this page are worked out</p>
+    <div class="rules">
+      <div class="rule">
+        <div class="rule-head"><span class="sig-key below">!</span><span class="sig-key well">!!</span><b>Question signals</b><span class="where">Question signals by school</span></div>
+        <p><span class="lbl">Rule</span>A question is flagged for a school when all three of these are true:</p>
+        <ol class="steps">
+          <li>At least 3 of the school's students were counted for its secured rate.</li>
+          <li>The school's secured rate is lower than the whole program's.</li>
+          <li>The gap is too big to put down to chance. Suppose the school's students were exactly as likely to secure the question as the program average. What's the chance of a result this low, or lower, just by luck? <b>Below</b>: less than 1 in 10. <b>Well below</b>: less than 1 in 50.</li>
+        </ol>
+        <p><span class="lbl">How the chance is worked out</span>It's a one-sided binomial test, the same as the FSA reports. With <i>n</i> students counted, <i>k</i> secured, and a program rate of <i>p</i>, the chance is the sum, for every <i>i</i> from 0 to <i>k</i>, of C(<i>n</i>, <i>i</i>) × <i>p</i><sup><i>i</i></sup> × (1 − <i>p</i>)<sup><i>n</i> − <i>i</i></sup>.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><span class="status">Check in</span><b>School to check in with</b><span class="where">Schools table</span></div>
+        <p><span class="lbl">Rule</span>2 or more flagged questions across the three tests, or at least 8 students with a framework growth figure whose average is 8 points or more below the program's.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Business plan measure</b><span class="where">Business plan measure by year level</span></div>
+        <p><span class="lbl">Rule</span>Average framework growth for every student at that year level across the program, whatever test they sat. The same calculation as the school report, over all schools.</p>
+      </div>
+    </div>
+    <div class="fn-part">
+      <h3>Try the question signal test</h3>
+      <div class="calc">
+        <label class="field" for="cr-n">Students counted <input type="number" id="cr-n" min="3" max="200" value="12"></label>
+        <label class="field" for="cr-k">Of those, secured it <input type="number" id="cr-k" min="0" max="200" value="3"></label>
+        <label class="field" for="cr-p">Program secured rate (%) <input type="number" id="cr-p" min="1" max="99" value="50"></label>
+      </div>
+      <div class="calc-out" id="cr-out" aria-live="polite"></div>
+    </div>
+  </aside>
+</div>
+
+<!-- ============ STUDENT VIEW ============ -->
+<div class="wrap" id="studentView" hidden>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="#teacher" id="s-back">← Back</a></nav>
+  <header class="head">
+    <div class="who">
+      <span class="eyebrow">JESC Maths · Student report</span>
+      <h1 id="s-name"></h1>
+      <div class="meta" id="s-meta"></div>
+    </div>
+    <div class="head-tools">
+      <span class="chip">Wireframe · demo data only</span>
+      <div class="type-badge"><span>Current test</span><strong id="s-testBadge"></strong></div>
+    </div>
+  </header>
+
+  <section class="panel hero" aria-label="Latest result">
+    <div class="level">
+      <span class="eyebrow" id="s-heroEyebrow"></span>
+      <div class="big"><b class="num" id="s-heroPct"></b><span id="s-heroBand"></span></div>
+      <span class="delta" id="s-heroDelta"></span>
+    </div>
+    <div class="side">
+      <div class="panel-head"><h2>Teaching targets</h2></div>
+      <p class="sub">Every question below full marks on the latest assessment, lowest share of marks first.</p>
+      <div class="targets" id="s-targets"></div>
+      <div class="facts" id="s-facts"></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="s-journeyTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="s-journeyTitle">Framework journey</h2>
+        <p class="sub">Framework score at each assessment. The shaded bands show which test each score is on. Select a point to see its question scores below.</p>
+      </div>
+    </div>
+    <div class="chart" id="s-line" role="img" aria-label="Line chart of the student's framework score over time"></div>
+    <div class="tbl-wrap"><table id="s-table"></table></div>
+  </section>
+
+  <section class="panel" aria-labelledby="s-qTitle">
+    <div class="panel-head">
+      <div class="titles">
+        <h2 id="s-qTitle">Question scores</h2>
+        <p class="sub" id="s-qSub"></p>
+      </div>
+      <div class="seg" role="group" aria-label="Assessment" id="s-datePick"></div>
+    </div>
+    <div class="legend"><span><i class="lg-full"></i>Full marks</span><span><i class="lg-part"></i>Some marks</span><span id="s-prevLegend"><i class="lg-prev"></i>Previous time on this test</span></div>
+    <div class="bars" id="s-bars"></div>
+  </section>
+
+  <footer class="notes">
+    <p>The communication tool used (PODD book or device) is recorded on each data sheet and shown at the top of this report where one was used.</p>
+  </footer>
+  <aside class="footnote" aria-label="How the numbers on this page are worked out">
+    <p class="eyebrow">Footnote · How the numbers on this page are worked out</p>
+    <div class="rules">
+      <div class="rule">
+        <div class="rule-head"><b>Percentage</b><span class="where">Latest result, framework journey</span></div>
+        <p><span class="lbl">Rule</span>Total marks divided by the test's total: 82 for Foundation, 111 for Year 1, 82 for Year 2. Foundation's optional Numeral Writing isn't included, the same as on the data sheet.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Passed</b><span class="where">Latest result, framework journey</span></div>
+        <p><span class="lbl">Rule</span>90% or higher. The student sits the next test at their next assessment. Passing Year 2 completes the framework.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Framework score</b><span class="where">Framework journey</span></div>
+        <p><span class="lbl">Rule</span>Foundation is 0–100, Year 1 is 100–200 and Year 2 is 200–300. The score is where the test starts on the ladder plus the percentage, so a line that keeps rising means progress, even when the student moves to a harder test and their percentage restarts.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-head"><b>Teaching targets</b><span class="where">Teaching targets, question scores</span></div>
+        <p><span class="lbl">Rule</span>Every question below full marks on the latest assessment. “Not yet” means under half marks on that question. “Nearly” means half marks or more.</p>
+      </div>
+    </div>
+  </aside>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+/* ================= TESTS ================= */
+// The three JESC Maths tests, with each question's maximum mark, grouped into the sections on the data sheets.
+// offset: where the test sits on the framework score ladder. c: difficulty used only to make the demo data.
+const TESTS = {
+  F: { id: "F", name: "Foundation", offset: 0, c: 40, sections: [
+    ["Counting collections", [["In a line", 3], ["Scattered", 3], ["Counting out", 3]]],
+    ["Reading numerals to 20", [["Reading numerals to 20", 5]]],
+    ["Finds numbers before and after", [["Before", 5], ["After", 5]]],
+    ["Counting backward from 10", [["Counting backward from 10", 10]]],
+    ["Subitising", [["Subitised", 5], ["Ordered", 6]]],
+    ["Simple addition and subtraction", [["Add", 3], ["Subtract", 3], ["Share", 3]]],
+    ["Count mental representation", [["Count mental representation", 5]]],
+    ["Identify smaller/larger number", [["Smaller", 2], ["Larger", 4]]],
+    ["Find the missing number", [["Find the missing number", 4]]],
+    ["Simple AB patterns", [["Simple AB patterns", 4]]],
+    ["Sorting notes and coins", [["Sorting notes and coins", 9]]],
+  ] },
+  Y1: { id: "Y1", name: "Year 1", offset: 100, c: 95, sections: [
+    ["Number sequences to and from 120", [["Number sequences to and from 120", 5]]],
+    ["Read and write numbers to 120", [["Read", 5], ["Write", 5]]],
+    ["Two-digit numbers are made of 10s and 1s", [["MAB student", 5], ["MAB teacher", 5]]],
+    ["Grouping in tens", [["Grouping in tens", 5]]],
+    ["Verbal skip counting", [["Counting in 2s", 10], ["Counting in 5s", 10], ["Counting in 10s", 10]]],
+    ["Double facts", [["Double facts", 4]]],
+    ["Addition using counting on / commutative property", [["Original sums", 6], ["Commutative sums", 6]]],
+    ["Addition and subtraction with partitioning", [["Addition", 3], ["Subtraction", 3]]],
+    ["Addition with re-arranging parts", [["Addition with re-arranging parts", 6]]],
+    ["Halved paper", [["Halved paper", 1], ["Correct description", 1]]],
+    ["Count and order Australian currency", [["Coins ordered", 1], ["Notes ordered", 1], ["Naming notes and coins", 11]]],
+    ["Patterns in numbers and objects", [["Number patterns", 4], ["Shape patterns", 4]]],
+  ] },
+  Y2: { id: "Y2", name: "Year 2", offset: 200, c: 150, sections: [
+    ["Number sequences by 2s, 3s, 5s and 10s", [["Number sequences by 2s, 3s, 5s and 10s", 7]]],
+    ["Recognise and order numbers to 1020", [["Recognise and order numbers to 1020", 5]]],
+    ["Partition and group numbers to 1000", [["Partition and group numbers to 1000", 5]]],
+    ["Rearrange numbers to 1020", [["Number read", 6], ["Number made", 6]]],
+    ["Addition and subtraction using mental strategies", [["Mental strategies", 10]]],
+    ["Multiplication as repeated addition", [["Repeated addition", 3]]],
+    ["Multiplication as an array", [["Array", 3]]],
+    ["Division as grouping into equal sets", [["Equal sets", 3]]],
+    ["Recognise and interpret 1/2, 1/4 and 1/8", [["Recognising", 3], ["Building", 3]]],
+    ["Australian currency", [["Counting collections", 5], ["Creating collections", 5]]],
+    ["Number patterns", [["Missing numbers", 3], ["Rule", 3]]],
+    ["Number sentences for word problems", [["Writing", 4], ["Answer", 4]]],
+    ["Equalities and inequalities", [["Sum match", 4]]],
+  ] },
+};
+const TEST_ORDER = ["F", "Y1", "Y2"];
+const PASS = 90;
+Object.values(TESTS).forEach((t) => {
+  t.questions = [];
+  t.sections.forEach(([section, qs]) => qs.forEach(([label, max]) => {
+    t.questions.push({ n: t.questions.length + 1, key: `${t.id}-${t.questions.length + 1}`, label, section, max, single: qs.length === 1 });
+  }));
+  t.total = t.questions.reduce((s, q) => s + q.max, 0);
+});
+const qName = (t, n) => { const q = TESTS[t].questions[n - 1]; return q.single ? q.label : `${q.section}: ${q.label}`; };
+const nextTest = (t) => TEST_ORDER[TEST_ORDER.indexOf(t) + 1] || null;
+
+/* ================= ROUNDS ================= */
+const ROUNDS = [
+  { id: 0, year: 2024, sem: "Semester One", date: "2024-03-11" },
+  { id: 1, year: 2024, sem: "Semester Two", date: "2024-08-26" },
+  { id: 2, year: 2025, sem: "Semester One", date: "2025-03-10" },
+  { id: 3, year: 2025, sem: "Semester Two", date: "2025-08-25" },
+  { id: 4, year: 2026, sem: "Semester One", date: "2026-03-09" },
+  { id: 5, year: 2026, sem: "Semester Two", date: "2026-08-24" },
+];
+const YEARS = [2024, 2025, 2026];
+
+/* ================= SCHOOLS ================= */
+// g: how fast students at this school progress. hard: questions this school finds hard to teach ("test-question": years).
+// These are what set off the question signals in the demo.
+const SCHOOL_SETUP = [
+  ["A", 1.0, {}], ["B", 0.85, { "F-10": [2024, 2025, 2026], "F-11": [2025, 2026] }], ["C", 1.15, { "Y1-10": [2026] }],
+  ["D", 1.0, {}], ["E", 1.1, {}], ["F", 0.95, { "F-8": [2025, 2026] }], ["G", 1.05, {}], ["H", 0.9, {}], ["I", 1.0, {}],
+  ["J", 0.95, { "Y1-7": [2024, 2025, 2026] }], ["K", 1.1, {}], ["L", 1.0, {}], ["M", 0.75, {}], ["N", 1.0, { "F-16": [2026] }], ["O", 1.05, {}],
+];
+const SCHOOLS = {};
+SCHOOL_SETUP.forEach(([code, g, hard]) => {
+  SCHOOLS[code] = { name: "School " + code, g, hard, rooms: {
+    "Room 1": { teacher: "Teacher A", setting: "Pre-primary and Year 1" },
+    "Room 2": { teacher: "Teacher B", setting: "Year 1 and Year 2" },
+    "Room 3": { teacher: "Teacher C", setting: "Year 3 and Year 4" },
+    "Room 4": { teacher: "Teacher D", setting: "Year 5 and Year 6" },
+  } };
+});
+// Questions that are hard in every school. Program administrators tag these so schools see "Hard across the whole program".
+const PROGRAM_HARD = { "Y1-17": [2024, 2025, 2026] };
+const PROGRAM_TAGGED = ["Y1-17"];
+
+/* ================= STUDENTS ================= */
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function seedOf(s) { let h = 7; for (const c of s) h = Math.imul(h, 31) + c.charCodeAt(0) | 0; return h; }
+const FIRST_NAMES = ["Ada", "Alfie", "Archie", "Bella", "Billy", "Charlie", "Chloe", "Cooper", "Daisy", "Eddie", "Elsie", "Ezra", "Finn",
+  "Florence", "George", "Grace", "Harper", "Hattie", "Hugo", "Indi", "Isla", "Jasper", "Jude", "Kai", "Lacey", "Leo", "Lenny", "Lola",
+  "Lucy", "Mason", "Maeve", "Milo", "Mia", "Nell", "Ned", "Noah", "Odette", "Ollie", "Pearl", "Poppy", "Remy", "Rosie", "Ruby", "Sami",
+  "Stella", "Theo", "Toby", "Tilly", "Vince", "Willow", "Wren", "Xavier", "Yara", "Zane", "Zoe"];
+const madeUpName = (rng) => FIRST_NAMES[Math.floor(rng() * FIRST_NAMES.length)] + " " + "ABCDEFGHJKLMNPRSTVW"[Math.floor(rng() * 19)] + ".";
+const COHORT = { 0: 3, 1: 4, 2: 3, 3: 3, 4: 2, 5: 2, 6: 2 };
+const SPLITS = { 1: ["Room 1", "Room 1", "Room 2", "Room 2"], 2: ["Room 1", "Room 1", "Room 2"], 3: ["Room 1", "Room 2", "Room 2"] };
+const ylNum = (st, y) => st.yl - (2026 - y);
+const ylName = (n) => n < 0 ? "Kindergarten" : n === 0 ? "Pre-primary" : "Year " + n;
+function roomOf(st, y) {
+  const n = ylNum(st, y);
+  if (n === 0) return "Room 1";
+  if (n === 1) return st.split || "Room 2";
+  if (n === 2) return "Room 2";
+  if (n === 3 || n === 4) return "Room 3";
+  return "Room 4";
+}
+const roomLabel = (room, school) => { const r = SCHOOLS[school].rooms[room]; return r ? `${room} · ${r.teacher}` : room; };
+
+const logistic = (x) => 1 / (1 + Math.exp(-x));
+const QDIFF = {};
+Object.values(TESTS).forEach((t) => { const r = mulberry32(seedOf("q" + t.id)); t.questions.forEach((q) => { QDIFF[q.key] = (r() - 0.5) * 36; }); });
+function expectedPct(theta, t) {
+  const T = TESTS[t];
+  return T.questions.reduce((s, q) => s + q.max * logistic((theta - T.c - QDIFF[q.key]) / 9), 0) / T.total * 100;
+}
+function sitTest(theta, t, school, year, rng) {
+  const T = TESTS[t], sch = SCHOOLS[school];
+  const scores = T.questions.map((q) => {
+    const hardYears = sch.hard[q.key] || PROGRAM_HARD[q.key];
+    const extra = (sch.hard[q.key] && sch.hard[q.key].includes(year) ? 22 : 0) + (PROGRAM_HARD[q.key] && PROGRAM_HARD[q.key].includes(year) ? 22 : 0);
+    const f = Math.min(1, Math.max(0, logistic((theta - T.c - QDIFF[q.key] - extra) / 9) + (rng() - 0.5) * 0.25));
+    return Math.round(f * q.max);
+  });
+  const score = scores.reduce((s, v) => s + v, 0);
+  return { scores, score, pct: score / T.total * 100 };
+}
+
+function buildSchoolStudents(code) {
+  const rng = mulberry32(seedOf("jesc" + code));
+  const out = [];
+  let k = 0;
+  for (let yl = 0; yl <= 6; yl++) {
+    for (let j = 0; j < COHORT[yl]; j++) {
+      const first = yl === 0 ? 4 : yl === 1 ? 2 : 0;
+      const startYl = yl - (2026 - ROUNDS[first].year);
+      const st = {
+        id: code.toLowerCase() + String(k + 1).padStart(2, "0"), name: madeUpName(rng), school: code, yl,
+        tool: rng() < 0.12 ? (rng() < 0.5 ? "PODD book" : "Device") : null,
+        split: SPLITS[yl] ? SPLITS[yl][j] : undefined,
+        theta0: 12 + startYl * 16 + (rng() - 0.5) * 30, g: (7 + rng() * 11) * SCHOOLS[code].g, first,
+      };
+      // Start on the first test the student is not already passing.
+      let test = TEST_ORDER.find((t) => expectedPct(st.theta0, t) < PASS) || "Y2";
+      const srng = mulberry32(seedOf(st.id));
+      st.assessments = [];
+      for (let r = first; r <= 5 && test; r++) {
+        const rd = ROUNDS[r];
+        const theta = st.theta0 + st.g * (r - first) + (srng() - 0.5) * 10;
+        const res = sitTest(theta, test, code, rd.year, srng);
+        const a = { round: r, date: rd.date, year: rd.year, sem: rd.sem, test, cls: roomOf(st, rd.year), yearLevel: ylNum(st, rd.year), ...res };
+        a.fw = TESTS[test].offset + a.pct;
+        a.passed = a.pct >= PASS;
+        a.targets = TESTS[test].questions.filter((q) => a.scores[q.n - 1] < q.max).map((q) => q.n);
+        st.assessments.push(a);
+        if (a.passed) test = nextTest(test); // passing Year 2 completes the framework
+      }
+      st.completed = !test;
+      st.byRound = Object.fromEntries(st.assessments.map((a) => [a.round, a]));
+      out.push(st);
+      k++;
+    }
+  }
+  return out;
+}
+const STUDENTS = Object.keys(SCHOOLS).flatMap(buildSchoolStudents);
+const BY_ID = Object.fromEntries(STUDENTS.map((s) => [s.id, s]));
+
+/* ================= HELPERS ================= */
+const $ = (q) => document.querySelector(q);
+const fmtDate = (d, opt) => new Date(d + "T00:00:00").toLocaleDateString("en-AU",
+  opt === "short" ? { month: "short", year: "2-digit" } : { day: "numeric", month: "short", year: "numeric" });
+const pct = (v) => (Math.round(v * 10) / 10).toFixed(1) + "%";
+const pct0 = (v) => Math.round(v) + "%";
+const avg = (xs) => xs.length ? xs.reduce((t, v) => t + v, 0) / xs.length : null;
+const r1 = (v) => (Math.round(v * 10) / 10).toFixed(1);
+const signed = (v, f = (x) => x) => (v > 0 ? "+" : v < 0 ? "−" : "") + f(Math.abs(v));
+const pctOf = (a, b) => b ? Math.round(a / b * 100) + "%" : "—";
+const semShort = (a) => `${a.sem === "Semester One" ? "S1" : "S2"} ${a.year}`;
+const band = (p) => p >= PASS ? "yellow" : p >= 50 ? "green" : "red";
+const BAND_NAME = { yellow: "90%+ passed", green: "50–89.9%", red: "Under 50%" };
+const bandChip = (p) => `<span class="band-chip ${band(p)}">${pct0(p)}</span>`;
+const testChip = (t) => `<span class="chip test-${t}">${TESTS[t].name}</span>`;
+const statTiles = (tiles) => tiles.map(([v, k]) => `<div class="stat"><span class="v num">${v}</span><span class="k">${k}</span></div>`).join("");
+const yearButtons = (sel) => YEARS.map((yy) => `<button type="button" data-y="${yy}" aria-pressed="${yy === sel}">${yy}</button>`).join("");
+const inYear = (st, y) => st.assessments.some((a) => a.year === y);
+const MIN_N = 3;
+function niceMax(v, step) { return Math.ceil((v + step * 0.5) / step) * step; }
+
+// One student's year: first and last assessment, framework growth, and change on the same test.
+function studentYear(st, y) {
+  const as = st.assessments.filter((a) => a.year === y);
+  const first = as[0], last = as[as.length - 1];
+  const two = as.length > 1;
+  return {
+    as, first, last,
+    growth: two ? last.fw - first.fw : null,
+    sameChange: two && first.test === last.test ? last.pct - first.pct : null,
+    passedTests: as.filter((a) => a.passed).map((a) => a.test),
+  };
+}
+function summarise(rows) {
+  const g = rows.filter((r) => r.growth != null);
+  return {
+    n: rows.length, counted: g.length,
+    avgGrowth: avg(g.map((r) => r.growth)),
+    improved: g.filter((r) => r.growth > 0).length,
+    passed: rows.filter((r) => r.passedTests.length).length,
+    avgPct: avg(rows.filter((r) => r.last).map((r) => r.last.pct)),
+  };
+}
+
+/* ---------- Tooltip ---------- */
+const tip = $("#tip");
+function showTip(el, x, y) {
+  tip.textContent = el.getAttribute("data-tip");
+  tip.hidden = false;
+  const r = tip.getBoundingClientRect();
+  let left = x + 14, top = y + 14;
+  if (left + r.width > innerWidth - 8) left = x - r.width - 14;
+  if (top + r.height > innerHeight - 8) top = y - r.height - 14;
+  tip.style.left = Math.max(8, left) + "px";
+  tip.style.top = Math.max(8, top) + "px";
+}
+document.addEventListener("pointermove", (e) => {
+  const el = e.target.closest && e.target.closest("[data-tip]");
+  if (el) showTip(el, e.clientX, e.clientY); else tip.hidden = true;
+});
+document.addEventListener("focusin", (e) => {
+  const el = e.target.closest("[data-tip]");
+  if (el) { const r = el.getBoundingClientRect(); showTip(el, r.right, r.top); }
+});
+document.addEventListener("focusout", () => { tip.hidden = true; });
+
+/* ---------- Bar chart of growth per year (school and program) ---------- */
+function drawGrowthBars(el, data, nameOf) {
+  const W = Math.max(300, el.clientWidth), H = 220;
+  const m = { t: 26, r: 16, b: 30, l: 40 };
+  const all = data.flatMap((d) => [d.v, ...(d.dots || []).map((x) => x.v)]).filter((v) => v != null);
+  const step = 10;
+  const yMax = Math.max(step, Math.ceil((Math.max(...all) + 3) / step) * step);
+  const y = (v) => H - m.b - Math.max(0, v) / yMax * (H - m.t - m.b);
+  const slot = (W - m.l - m.r) / data.length, bw = Math.min(72, slot * 0.45);
+  let s = "";
+  for (let v = 0; v <= yMax; v += step) {
+    s += `<line class="grid-line" x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}"/>`;
+    s += `<text class="axis-text num" x="${m.l - 8}" y="${y(v) + 4}" text-anchor="end">${v ? "+" + v : 0}</text>`;
+  }
+  data.forEach((d, i) => {
+    const cx = m.l + slot * (i + 0.5);
+    if (d.v == null) return;
+    s += `<rect x="${cx - bw / 2}" y="${y(d.v)}" width="${bw}" height="${y(0) - y(d.v)}" rx="4" fill="var(--accent)" fill-opacity="${d.dots ? 0.35 : 1}"/>`;
+    s += `<text x="${cx}" y="${y(d.v) - 8}" text-anchor="middle" fill="var(--ink)" font-size="13" font-weight="700" font-family="var(--font-body)">${signed(d.v, r1)}</text>`;
+    (d.dots || []).forEach((dot, j) => {
+      s += `<circle cx="${cx + bw / 2 + 14 + (j % 3) * 7}" cy="${y(dot.v)}" r="4" fill="var(--ink)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5" data-tip="${d.y}: ${dot.name} ${signed(dot.v, r1)} points per student"/>`;
+    });
+    s += `<text class="axis-text" x="${cx}" y="${H - 8}" text-anchor="middle">${d.y}</text>`;
+    s += `<rect class="bar-hit" x="${cx - bw / 2}" y="${m.t}" width="${bw}" height="${H - m.t - m.b}" data-tip="${d.y}: ${nameOf} ${signed(d.v, r1)} framework points per student"/>`;
+  });
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${s}</svg>`;
+}
+
+/* ================= STUDENT VIEW ================= */
+const S = { st: null, sel: 0 };
+
+function renderStudent(st) {
+  S.st = st; S.sel = st.assessments.length - 1;
+  const A = st.assessments, latest = A[A.length - 1], prev = A[A.length - 2];
+  $("#s-name").textContent = st.name;
+  $("#s-testBadge").textContent = st.completed ? "Completed" : TESTS[latest.passed ? nextTest(latest.test) : latest.test].name;
+  $("#s-back").href = "#" + G.mode;
+  $("#s-back").textContent = "← " + (G.mode === "yeargroup" ? ylName(G.yl) : roomLabel(G.room, G.school)) + ` (${G.year})`;
+  $("#s-meta").innerHTML = [
+    ylName(latest.yearLevel), SCHOOLS[st.school].name, `Class: ${roomLabel(latest.cls, st.school)}`,
+    `${A.length} assessments since ${fmtDate(A[0].date)}`,
+    st.tool ? `Communication tool: ${st.tool}` : null,
+  ].filter(Boolean).map((t) => `<span>${t}</span>`).join("");
+
+  $("#s-heroEyebrow").textContent = `Latest result · ${TESTS[latest.test].name} test`;
+  $("#s-heroPct").textContent = pct0(latest.pct);
+  $("#s-heroBand").innerHTML = latest.passed ? `Passed${st.completed ? " · framework completed" : ` · moves to ${TESTS[nextTest(latest.test)].name}`}` : BAND_NAME[band(latest.pct)];
+  const fwChange = prev ? latest.fw - prev.fw : null;
+  $("#s-heroDelta").textContent = (prev
+    ? `Framework score ${Math.round(latest.fw)} (${signed(Math.round(fwChange))} since ${semShort(prev)})`
+    : `Framework score ${Math.round(latest.fw)} · first assessment`) + ` · ${fmtDate(latest.date)}`;
+
+  const T = TESTS[latest.test];
+  const targets = latest.targets.map((n) => ({ n, q: T.questions[n - 1], got: latest.scores[n - 1] }))
+    .sort((a, b) => a.got / a.q.max - b.got / b.q.max);
+  $("#s-targets").innerHTML = targets.length ? targets.map((t) => {
+    const share = t.got / t.q.max;
+    return `<div class="target ${share >= 0.5 ? "gap" : ""}"><strong>Q${t.n}</strong><span>${qName(latest.test, t.n)}</span><span>${t.got}/${t.q.max} · ${share >= 0.5 ? "Nearly" : "Not yet"}</span></div>`;
+  }).join("") : `<p class="sub">Full marks on every question.</p>`;
+  $("#s-facts").innerHTML = [
+    `<span>Tests passed <b class="num">${A.filter((a) => a.passed).length}</b></span>`,
+    `<span>Framework growth since first assessment <b class="num">${signed(Math.round(latest.fw - A[0].fw))}</b></span>`,
+    `<span>Questions below full marks <b class="num">${targets.length} of ${T.questions.length}</b></span>`,
+  ].join("");
+
+  $("#s-table").innerHTML = "<tr><th>Date</th><th>Semester</th><th>Year level</th><th>Class</th><th>Test</th><th>Score</th><th>Percentage</th><th>Framework score</th></tr>" +
+    A.map((a) => `<tr><td>${fmtDate(a.date)}</td><td>${a.sem}</td><td>${ylName(a.yearLevel)}</td><td>${a.cls}</td><td>${TESTS[a.test].name}</td><td class="num">${a.score}/${TESTS[a.test].total}</td><td>${bandChip(a.pct)}${a.passed ? " Passed" : ""}</td><td class="num">${Math.round(a.fw)}</td></tr>`).join("");
+  $("#s-datePick").innerHTML = A.map((a, i) => `<button type="button" data-i="${i}">${semShort(a)}</button>`).join("");
+  drawJourney();
+  renderQuestionBars();
+}
+
+function drawJourney() {
+  const el = $("#s-line"), A = S.st.assessments;
+  const W = Math.max(300, el.clientWidth), H = W < 520 ? 250 : 290;
+  const m = { t: 18, r: 72, b: 34, l: 46 };
+  const xs = A.map((a) => +new Date(a.date + "T00:00:00"));
+  const x0 = Math.min(...xs), span = (Math.max(...xs) - x0) || 1, pw = W - m.l - m.r;
+  const x = (v) => A.length === 1 ? m.l + pw / 2 : m.l + (v - x0) / span * pw;
+  const yMin = Math.max(0, Math.floor((Math.min(...A.map((a) => a.fw)) - 15) / 100) * 100);
+  const yMax = Math.min(300, Math.ceil((Math.max(...A.map((a) => a.fw)) + 15) / 100) * 100);
+  const y = (v) => H - m.b - (v - yMin) / (yMax - yMin) * (H - m.t - m.b);
+  let s = "";
+  TEST_ORDER.forEach((t, i) => {
+    const lo = TESTS[t].offset, hi = lo + 100;
+    if (hi <= yMin || lo >= yMax) return;
+    s += `<rect x="${m.l}" y="${y(hi)}" width="${pw}" height="${y(lo) - y(hi)}" fill="var(--accent)" fill-opacity="${i % 2 ? 0.07 : 0.03}"/>`;
+    s += `<line x1="${m.l}" x2="${m.l + pw}" y1="${y(lo + PASS)}" y2="${y(lo + PASS)}" stroke="var(--band-y)" stroke-width="1.5" stroke-dasharray="4 4"/>`;
+    s += `<text class="axis-text" x="${m.l + pw + 8}" y="${(y(hi) + y(lo)) / 2 + 4}">${TESTS[t].name}</text>`;
+  });
+  for (let v = yMin; v <= yMax; v += 50) s += `<text class="axis-text num" x="${m.l - 8}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
+  const every = Math.max(1, Math.ceil(64 / (A.length > 1 ? pw / (A.length - 1) : pw)));
+  A.forEach((a, i) => { if (i % every === 0 || i === A.length - 1) s += `<text class="axis-text" x="${x(xs[i])}" y="${H - 10}" text-anchor="${A.length === 1 ? "middle" : i === 0 ? "start" : i === A.length - 1 ? "end" : "middle"}">${semShort(a)}</text>`; });
+  const pts = A.map((a, i) => [x(xs[i]), y(a.fw)]);
+  s += `<path d="${pts.map((p, i) => (i ? "L" : "M") + p[0] + " " + p[1]).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>`;
+  pts.forEach((p, i) => {
+    const a = A[i], sel = i === S.sel;
+    s += `<circle cx="${p[0]}" cy="${p[1]}" r="${sel ? 7 : 5}" fill="${a.passed ? "var(--band-y)" : sel ? "var(--accent)" : "var(--surface)"}" stroke="${sel ? "var(--ink)" : "var(--accent)"}" stroke-width="2"/>`;
+    s += `<circle class="pt-hit" tabindex="0" role="button" data-i="${i}" cx="${p[0]}" cy="${p[1]}" r="16" data-tip="${a.sem} ${a.year}: ${TESTS[a.test].name} ${pct0(a.pct)}${a.passed ? " (passed)" : ""}, framework score ${Math.round(a.fw)}"/>`;
+  });
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${s}</svg>`;
+  el.querySelectorAll(".pt-hit").forEach((c) => {
+    const pick = () => { S.sel = +c.dataset.i; drawJourney(); renderQuestionBars(); };
+    c.addEventListener("click", pick);
+    c.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+  });
+}
+
+function renderQuestionBars() {
+  const A = S.st.assessments, a = A[S.sel], T = TESTS[a.test];
+  const prev = A.slice(0, S.sel).reverse().find((p) => p.test === a.test);
+  let h = "", lastSection = null;
+  T.questions.forEach((q) => {
+    if (q.section !== lastSection) h += q.single ? `<div class="q-gap"></div>` : `<div class="q-section">${q.section}</div>`;
+    lastSection = q.section;
+    const v = a.scores[q.n - 1], full = v === q.max;
+    const pv = prev ? prev.scores[q.n - 1] : null;
+    h += `<div class="bar-row ${full ? "full" : v === 0 ? "none-mark" : "part"}" tabindex="0" data-tip="Q${q.n} ${qName(a.test, q.n)}: ${v}/${q.max}${prev ? ` (previously ${pv}/${q.max})` : ""}">
+      <span class="bar-label">Q${q.n} ${q.single ? q.label : q.label}</span>
+      <div class="track"><div class="fill" style="width:${v / q.max * 100}%"></div>${prev ? `<i class="prev" style="left:${pv / q.max * 100}%"></i>` : ""}</div>
+      <span class="bar-val">${v}/${q.max}</span></div>`;
+  });
+  $("#s-bars").innerHTML = h;
+  $("#s-bars").classList.toggle("show-prev", !!prev);
+  $("#s-prevLegend").hidden = !prev;
+  $("#s-qSub").textContent = `${T.name} test, ${a.sem} ${a.year}: ${a.score}/${T.total} (${pct0(a.pct)}).` + (prev ? ` The dark tick shows ${semShort(prev)} on the same test.` : "");
+  $("#s-datePick").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.i === S.sel));
+}
+$("#s-datePick").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  S.sel = +b.dataset.i; drawJourney(); renderQuestionBars();
+});
+
+/* ================= GROUP VIEW (teacher or year group) ================= */
+// mode "teacher": one class. mode "yeargroup": every student at one year level, whatever class or test they are on.
+// test: "all" uses the framework score; "F", "Y1" or "Y2" narrows everything to students who sat that test.
+const G = { role: "A", mode: "teacher", school: "A", room: "Room 2", yl: 2, year: 2026, test: "all", scTest: "F", pgTest: "F", pgCell: null };
+const isYG = () => G.mode === "yeargroup";
+const isAdmin = () => G.role === "admin";
+const canSee = (code) => isAdmin() || G.role === code;
+const schoolStudents = (code) => STUDENTS.filter((st) => st.school === code);
+
+function groupStudents(y) {
+  return STUDENTS.filter((st) => st.school === G.school && inYear(st, y) && (isYG() ? ylNum(st, y) === G.yl : roomOf(st, y) === G.room));
+}
+const satTest = (st, y, t) => st.assessments.some((a) => a.year === y && a.test === t);
+const onEachTest = (rows) => TEST_ORDER.map((t) => { const n = rows.filter((r) => r.last && r.last.test === t).length; return n ? `${TESTS[t].name} ${n}` : null; }).filter(Boolean).join(" · ") || "—";
+
+// Business plan rows: one per year level.
+function bpRows(rows, linkYG) {
+  const levels = [...new Set(rows.map((r) => r.yl))].sort((a, b) => a - b);
+  return levels.map((n) => {
+    const rr = rows.filter((r) => r.yl === n), s = summarise(rr);
+    const name = linkYG ? `<a href="#yeargroup" data-yl="${n}">${ylName(n)}</a>` : ylName(n);
+    return `<tr><td>${name}</td><td class="num">${rr.length}</td><td class="num"><b>${s.counted ? signed(s.avgGrowth, r1) : "—"}</b></td><td class="num">${s.counted ? `${s.improved} of ${s.counted}` : "—"}</td><td class="num">${s.passed}</td><td>${onEachTest(rr)}</td></tr>`;
+  }).join("");
+}
+const BP_HEAD = `<thead><tr><th>Year level</th><th>Students</th><th>Average framework growth</th><th>Went up</th><th>Passed a test</th><th>On each test (latest)</th></tr></thead>`;
+
+function tabsHTML(current) {
+  const tabs = [["teacher", "Teacher"], ["yeargroup", "Year group"], ["school", "School"]];
+  if (isAdmin()) tabs.push(["program", "Program"]);
+  return tabs.map(([h, label]) => `<a href="#${h}" ${h === current ? 'aria-current="page"' : ""}>${label}</a>`).join("");
+}
+function schoolOptions() {
+  return Object.entries(SCHOOLS).filter(([c]) => canSee(c)).map(([c, s]) => `<option value="${c}" ${c === G.school ? "selected" : ""}>${s.name}</option>`).join("");
+}
+
+function renderGroup() {
+  const y = G.year, sch = SCHOOLS[G.school];
+  $("#g-tabs").innerHTML = tabsHTML(G.mode);
+  $("#g-school").innerHTML = schoolOptions();
+  $("#g-school").disabled = !isAdmin();
+  if (isYG()) {
+    const levels = [...new Set(schoolStudents(G.school).filter((st) => inYear(st, y)).map((st) => ylNum(st, y)))].filter((n) => n >= 0).sort((a, b) => a - b);
+    if (!levels.includes(G.yl)) G.yl = levels[0];
+    $("#g-pickLabel").textContent = "Year level";
+    $("#g-pick").innerHTML = levels.map((n) => `<option value="${n}" ${n === G.yl ? "selected" : ""}>${ylName(n)}</option>`).join("");
+  } else {
+    const rooms = Object.keys(sch.rooms).filter((rm) => schoolStudents(G.school).some((st) => inYear(st, y) && roomOf(st, y) === rm));
+    if (!rooms.includes(G.room)) G.room = rooms[0];
+    $("#g-pickLabel").textContent = "Class";
+    $("#g-pick").innerHTML = rooms.map((rm) => `<option value="${rm}" ${rm === G.room ? "selected" : ""}>${roomLabel(rm, G.school)}</option>`).join("");
+  }
+  $("#g-years").innerHTML = yearButtons(y);
+  $("#g-tests").innerHTML = [["all", "All tests"], ...TEST_ORDER.map((t) => [t, TESTS[t].name])].map(([v, l]) => `<button type="button" data-t="${v}" aria-pressed="${v === G.test}">${l}</button>`).join("");
+
+  const everyone = groupStudents(y);
+  const allRows = everyone.map((st) => ({ st, yl: ylNum(st, y), ...studentYear(st, y) }));
+  const T = G.test === "all" ? null : TESTS[G.test];
+  const rows = T ? allRows.filter((r) => satTest(r.st, y, T.id)) : allRows;
+  const noun = isYG() ? "year group" : "class";
+
+  $("#g-eyebrow").textContent = `JESC Maths · ${isYG() ? "Year group" : "Teacher"} report`;
+  $("#g-title").textContent = isYG() ? `${ylName(G.yl)} · ${y}` : roomLabel(G.room, G.school);
+  const rooms = [...new Set(everyone.map((st) => roomOf(st, y)))];
+  $("#g-meta").innerHTML = (isYG()
+    ? [sch.name, `${everyone.length} students across ${rooms.length} ${rooms.length === 1 ? "class" : "classes"}`, "Grouped by each student's year level, not their class or test"]
+    : [sch.name, sch.rooms[G.room].setting, `${everyone.length} students in ${y}`]).map((t) => `<span>${t}</span>`).join("");
+
+  // Summary numbers
+  if (!T) {
+    const s = summarise(rows);
+    $("#g-stats").innerHTML = statTiles([
+      [s.counted ? signed(s.avgGrowth, r1) : "—", `Average framework growth per student in ${y}`],
+      [s.counted ? `${s.improved} of ${s.counted}` : "—", "Students whose framework score went up"],
+      [s.passed, `Students who passed a test in ${y}`],
+      [rows.length, `Students in ${y}`],
+    ]);
+  } else {
+    const sittings = rows.map((r) => r.as.filter((a) => a.test === T.id));
+    const latestPct = avg(sittings.map((s) => s[s.length - 1].pct));
+    const both = sittings.filter((s) => s.length > 1);
+    $("#g-stats").innerHTML = statTiles([
+      [latestPct != null ? pct0(latestPct) : "—", `Average on ${T.name} (each student's latest sitting)`],
+      [both.length ? signed(avg(both.map((s) => s[s.length - 1].pct - s[0].pct)), r1) : "—", `Average change on ${T.name} (${both.length} sat it twice)`],
+      [sittings.filter((s) => s.some((a) => a.passed)).length, `Passed ${T.name} in ${y}`],
+      [rows.length, `Students who sat ${T.name} in ${y}`],
+    ]);
+  }
+
+  // Business plan measure (always across all tests)
+  const bp = summarise(allRows);
+  $("#g-bpSub").textContent = isYG()
+    ? `Average framework growth for ${ylName(G.yl)} students in ${y}, across every test they sat.`
+    : `Average framework growth in ${y} for each year level in this class, across every test.`;
+  $("#g-bpLine").innerHTML = isYG()
+    ? `<b class="num">${bp.counted ? signed(bp.avgGrowth, r1) : "—"}</b><span>framework points per ${ylName(G.yl)} student in ${y}, from ${bp.counted} students on ${onEachTest(allRows)}</span>`
+    : "";
+  $("#g-bpLine").hidden = !isYG();
+  $("#g-bpTable").innerHTML = BP_HEAD + "<tbody>" + bpRows(allRows, false) + "</tbody>";
+
+  // Student list
+  $("#g-listTitle").textContent = T ? `Students who sat ${T.name} in ${y}` : `Students in ${y}`;
+  $("#g-listSub").textContent = isAdmin() ? "Program administrators can't see individual students. The numbers on this page are for the whole group." : "Select a student to open their full report.";
+  $("#g-students").hidden = isAdmin();
+  $("#g-students").innerHTML = isAdmin() ? "" : `<thead><tr><th>Student</th><th>${isYG() ? "Class" : "Year level"}</th><th>Tests in ${y}</th><th>Latest</th><th>Change on same test</th><th>Framework growth</th><th>Targets</th><th></th></tr></thead><tbody>` +
+    rows.map((r) => {
+      const tests = [...new Set(r.as.map((a) => a.test))].map((t) => TESTS[t].name).join(" → ");
+      const latest = T ? r.as.filter((a) => a.test === T.id).pop() : r.last;
+      const change = r.sameChange != null ? signed(Math.round(r.sameChange)) : r.passedTests.length ? `Passed ${r.passedTests.map((t) => TESTS[t].name).join(", ")}` : "One assessment";
+      const growth = r.growth == null ? `<span class="sub">—</span>` : r.growth > 0 ? `<span class="delta-up">${signed(Math.round(r.growth))}</span>` : `<span class="delta-flat">${signed(Math.round(r.growth))}</span>`;
+      return `<tr data-id="${r.st.id}"><td><a href="#${r.st.id}">${r.st.name}</a></td><td>${isYG() ? roomLabel(roomOf(r.st, y), G.school) : ylName(r.yl)}</td><td>${tests}</td><td>${bandChip(latest.pct)} <span class="sub">${TESTS[latest.test].name}</span></td><td>${change}</td><td>${growth}</td><td class="num">${latest.targets.length}</td><td>${r.growth != null && r.growth <= 0 ? `<span class="status">No gain</span>` : ""}</td></tr>`;
+    }).join("") + "</tbody>";
+
+  // By class (year group only)
+  $("#g-byClassPanel").hidden = !isYG();
+  if (isYG()) {
+    $("#g-byClassSub").textContent = `${ylName(G.yl)} students can be in different classes. Select a class to open its teacher report.`;
+    $("#g-byClass").innerHTML = `<thead><tr><th>Class</th><th>${ylName(G.yl)} students</th><th>Framework growth</th><th>Went up</th><th>Passed a test</th></tr></thead><tbody>` +
+      rooms.sort().map((rm) => {
+        const rr = allRows.filter((r) => roomOf(r.st, y) === rm), s = summarise(rr);
+        return `<tr><td><a href="#teacher" data-room="${rm}">${roomLabel(rm, G.school)}</a></td><td class="num">${rr.length}</td><td class="num">${s.counted ? signed(s.avgGrowth, r1) : "—"}</td><td class="num">${s.counted ? `${s.improved} of ${s.counted}` : "—"}</td><td class="num">${s.passed}</td></tr>`;
+      }).join("") + "</tbody>";
+  }
+
+  renderBands(rows, y);
+  renderQuestionProgress(rows, y);
+  renderShared(rows, y);
+  renderGroupFlags(allRows, y);
+
+  $("#g-notes").innerHTML = [
+    isYG() ? "Year level comes from each student's own record, so split classes and students on different tests all count in the right year group." :
+      "This report is for spotting where a teacher may need more training or support with the framework. It isn't for ranking teachers.",
+    "Sections marked “Suggested” are ideas added to the original brief.",
+  ].map((t) => `<p>${t}</p>`).join("");
+}
+
+function renderBands(rows, y) {
+  const T = G.test === "all" ? null : G.test;
+  $("#g-bandSub").textContent = T ? `Students who sat ${TESTS[T].name} in each semester of ${y}, by colour band.` : `Every assessment in each semester of ${y}, whatever test was sat, by colour band.`;
+  $("#g-bands").innerHTML = ["Semester One", "Semester Two"].map((sem) => {
+    const as = rows.map((r) => r.as.find((a) => a.sem === sem && (!T || a.test === T))).filter(Boolean);
+    if (!as.length) return `<div class="band-row"><span class="band-lbl">${sem}</span><span class="sub">No assessments</span></div>`;
+    const c = { yellow: 0, green: 0, red: 0 };
+    as.forEach((a) => c[band(a.pct)]++);
+    return `<div class="band-row"><span class="band-lbl">${sem}<span class="sub">${as.length} students</span></span><div class="band-bar">${["yellow", "green", "red"].filter((b) => c[b]).map((b) =>
+      `<span class="band-seg ${b}" style="flex:${c[b]}" data-tip="${sem}: ${c[b]} student${c[b] === 1 ? "" : "s"} ${BAND_NAME[b]}">${c[b]}</span>`).join("")}</div></div>`;
+  }).join("");
+}
+
+function renderQuestionProgress(rows, y) {
+  const el = $("#g-questions");
+  $("#g-qLegend").hidden = G.test === "all";
+  if (G.test === "all") {
+    $("#g-qSub").textContent = "Questions are different on each test.";
+    el.innerHTML = `<p class="sub">Choose a test above to see progress on each of its questions.</p>`;
+    return;
+  }
+  const T = TESTS[G.test];
+  const pairs = rows.map((r) => [r.as.find((a) => a.sem === "Semester One" && a.test === T.id), r.as.find((a) => a.sem === "Semester Two" && a.test === T.id)]).filter(([a, b]) => a && b);
+  $("#g-qSub").textContent = `Average share of marks on each ${T.name} question, for the ${pairs.length} student${pairs.length === 1 ? "" : "s"} who sat it in both semesters of ${y}.`;
+  if (!pairs.length) { el.innerHTML = `<p class="sub">No students sat ${T.name} in both semesters of ${y}.</p>`; return; }
+  let h = "", lastSection = null;
+  T.questions.forEach((q) => {
+    if (q.section !== lastSection) h += q.single ? `<div class="q-gap"></div>` : `<div class="q-section">${q.section}</div>`;
+    lastSection = q.section;
+    const s1 = avg(pairs.map(([a]) => a.scores[q.n - 1] / q.max)) * 100;
+    const s2 = avg(pairs.map(([, b]) => b.scores[q.n - 1] / q.max)) * 100;
+    const lo = Math.min(s1, s2), hi = Math.max(s1, s2);
+    h += `<div class="db-row" tabindex="0" data-tip="Q${q.n} ${qName(T.id, q.n)}: ${pct0(s1)} in Semester One, ${pct0(s2)} in Semester Two">
+      <span class="bar-label">Q${q.n} ${q.label}</span>
+      <div class="db-track"><span class="db-line ${s2 < s1 ? "down" : ""}" style="left:${lo}%;width:${hi - lo}%"></span><span class="db-dot s1" style="left:${s1}%"></span><span class="db-dot s2" style="left:${s2}%"></span></div>
+      <span class="bar-val">${pct0(s1)} → ${pct0(s2)}</span></div>`;
+  });
+  el.innerHTML = h;
+}
+
+function renderShared(rows, y) {
+  const map = {};
+  rows.forEach((r) => {
+    const a = G.test === "all" ? r.last : r.as.filter((x) => x.test === G.test).pop();
+    if (!a) return;
+    a.targets.forEach((n) => { const k = a.test + "-" + n; (map[k] = map[k] || []).push(r.st); });
+  });
+  const items = Object.entries(map).filter(([, v]) => v.length > 1).sort((a, b) => b[1].length - a[1].length).slice(0, 6);
+  $("#g-sharedSub").textContent = `Questions below full marks for more than one student at their latest ${G.test === "all" ? "assessment" : TESTS[G.test].name + " sitting"} in ${y}. Good candidates for small-group teaching.`;
+  $("#g-shared").innerHTML = items.length ? items.map(([k, sts]) => {
+    const [t, n] = [k.split("-")[0], +k.split("-")[1]];
+    return `<li><span class="it">${TESTS[t].name} Q${n}</span><span class="cnt">${sts.length} students · ${qName(t, n)}</span><span class="names">${isAdmin() ? "" : sts.map((s) => `<a href="#${s.id}">${s.name}</a>`).join("")}</span></li>`;
+  }).join("") : `<li><span class="sub">No question is a target for more than one student.</span></li>`;
+}
+
+function renderGroupFlags(rows, y) {
+  const stuck = rows.filter((r) => r.growth != null && r.growth <= 0);
+  if (isAdmin()) {
+    $("#g-flags").innerHTML = `<li><span class="tag ${stuck.length ? "" : "info"}">${stuck.length ? "No gain" : "None"}</span><span>${stuck.length
+      ? `${stuck.length} of ${rows.filter((r) => r.growth != null).length} students didn't go up in ${y}. Names are only shown to school staff.`
+      : `Every student's framework score went up in ${y}.`}</span></li>`;
+    return;
+  }
+  $("#g-flags").innerHTML = stuck.length ? stuck.map((r) =>
+    `<li><span class="tag">No gain</span><span><a href="#${r.st.id}">${r.st.name}</a>${isYG() ? ` (${roomOf(r.st, y)})` : ""}: framework score ${Math.round(r.first.fw)} → ${Math.round(r.last.fw)} on ${TESTS[r.last.test].name} in ${y}.</span></li>`).join("")
+    : `<li><span class="tag info">None</span><span>Every student's framework score went up in ${y}.</span></li>`;
+}
+
+$("#g-years").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; G.year = +b.dataset.y; renderGroup(); });
+$("#g-tests").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; G.test = b.dataset.t; renderGroup(); });
+$("#g-school").addEventListener("change", (e) => { G.school = e.target.value; renderGroup(); });
+$("#g-pick").addEventListener("change", (e) => { if (isYG()) G.yl = +e.target.value; else G.room = e.target.value; renderGroup(); });
+$("#g-students").addEventListener("click", (e) => { if (e.target.closest("a")) return; const tr = e.target.closest("tr[data-id]"); if (tr) location.hash = tr.dataset.id; });
+document.addEventListener("click", (e) => {
+  const r = e.target.closest("a[data-room]"); if (r) G.room = r.dataset.room;
+  const l = e.target.closest("a[data-yl]"); if (l) G.yl = +l.dataset.yl;
+  const s = e.target.closest("a[data-school]"); if (s) G.school = s.dataset.school;
+});
+
+/* ================= SECURED RATES (school and program) ================= */
+// Students who sat test t in both semesters of year y and had less than full marks on a question in Semester One:
+// "secured" means full marks on it in Semester Two.
+const memo = {};
+function securedRates(code, y, t) {
+  const key = `${code}|${y}|${t}`;
+  if (memo[key]) return memo[key];
+  const out = TESTS[t].questions.map(() => ({ working: 0, reached: 0 }));
+  (code === "ALL" ? STUDENTS : schoolStudents(code)).forEach((st) => {
+    const a = st.assessments.find((x) => x.year === y && x.sem === "Semester One" && x.test === t);
+    const b = st.assessments.find((x) => x.year === y && x.sem === "Semester Two" && x.test === t);
+    if (!a || !b) return;
+    TESTS[t].questions.forEach((q, i) => {
+      if (a.scores[i] < q.max) { out[i].working++; if (b.scores[i] === q.max) out[i].reached++; }
+    });
+  });
+  return (memo[key] = out);
+}
+const rate = (c) => c.working ? c.reached / c.working * 100 : null;
+const tagChip = (key) => PROGRAM_TAGGED.includes(key) ? ` <span class="status prog">Hard across the whole program</span>` : "";
+
+/* ================= SCHOOL VIEW (own data only) ================= */
+function renderSchool() {
+  const y = G.year, code = G.school, sch = SCHOOLS[code];
+  const sts = schoolStudents(code).filter((st) => inYear(st, y));
+  const rows = sts.map((st) => ({ st, yl: ylNum(st, y), ...studentYear(st, y) }));
+  const s = summarise(rows);
+  $("#sc-tabs").innerHTML = tabsHTML("school");
+  $("#sc-school").innerHTML = schoolOptions();
+  $("#sc-school").disabled = !isAdmin();
+  $("#sc-years").innerHTML = yearButtons(y);
+  $("#sc-title").textContent = sch.name;
+  $("#sc-meta").innerHTML = [`${sts.length} students assessed in ${y}`, `${Object.keys(sch.rooms).length} classes in this demo`, "Pre-primary to Year 6"].map((t) => `<span>${t}</span>`).join("");
+  $("#sc-stats").innerHTML = statTiles([
+    [s.counted ? signed(s.avgGrowth, r1) : "—", `Average framework growth per student in ${y}`],
+    [s.counted ? pctOf(s.improved, s.counted) : "—", "Students whose framework score went up"],
+    [s.passed, `Students who passed a test in ${y}`],
+    [sts.length, `Students assessed in ${y}`],
+  ]);
+  $("#sc-bp").innerHTML = BP_HEAD + "<tbody>" + bpRows(rows, true) + `<tr class="total"><td><b>Whole school</b></td><td class="num">${rows.length}</td><td class="num"><b>${s.counted ? signed(s.avgGrowth, r1) : "—"}</b></td><td class="num">${s.improved} of ${s.counted}</td><td class="num">${s.passed}</td><td>${onEachTest(rows)}</td></tr></tbody>`;
+  drawSchoolBars();
+
+  $("#sc-testsSub").textContent = `Everyone who sat each test in ${y}. Averages are for each semester's sitting.`;
+  $("#sc-tests").innerHTML = `<thead><tr><th>Test</th><th>Students</th><th>Semester One</th><th>Semester Two</th><th>Passed</th><th>Latest bands</th></tr></thead><tbody>` +
+    TEST_ORDER.map((t) => {
+      const sat = rows.filter((r) => satTest(r.st, y, t));
+      const semAvg = (sem) => { const as = sat.map((r) => r.as.find((a) => a.sem === sem && a.test === t)).filter(Boolean); return as.length ? `${pct0(avg(as.map((a) => a.pct)))} <span class="sub">(${as.length})</span>` : "—"; };
+      const latest = sat.map((r) => r.as.filter((a) => a.test === t).pop());
+      const c = { yellow: 0, green: 0, red: 0 }; latest.forEach((a) => c[band(a.pct)]++);
+      return `<tr><td>${TESTS[t].name}</td><td class="num">${sat.length}</td><td>${semAvg("Semester One")}</td><td>${semAvg("Semester Two")}</td><td class="num">${sat.filter((r) => r.as.some((a) => a.test === t && a.passed)).length}</td><td>${sat.length ? ["yellow", "green", "red"].map((b) => `<span class="band-chip ${b}">${c[b]}</span>`).join(" ") : "—"}</td></tr>`;
+    }).join("") + "</tbody>";
+
+  $("#sc-testPick").innerHTML = TEST_ORDER.map((t) => `<button type="button" data-t="${t}" aria-pressed="${t === G.scTest}">${TESTS[t].name}</button>`).join("");
+  renderSchoolGrid();
+
+  $("#sc-classSub").textContent = `How each class at ${sch.name} progressed in ${y}. Select a class to open its teacher report.`;
+  const roomsHere = Object.keys(sch.rooms).filter((rm) => rows.some((r) => roomOf(r.st, y) === rm));
+  $("#sc-classes").innerHTML = `<thead><tr><th>Class</th><th>Students</th><th>Framework growth</th><th>Went up</th><th>Passed a test</th></tr></thead><tbody>` +
+    roomsHere.map((rm) => {
+      const rr = rows.filter((r) => roomOf(r.st, y) === rm), x = summarise(rr);
+      return `<tr><td><a href="#teacher" data-room="${rm}">${roomLabel(rm, code)}</a></td><td class="num">${rr.length}</td><td class="num">${x.counted ? signed(x.avgGrowth, r1) : "—"}</td><td class="num">${x.counted ? `${x.improved} of ${x.counted}` : "—"}</td><td class="num">${x.passed}</td></tr>`;
+    }).join("") + "</tbody>";
+  $("#sc-ownNote").textContent = `This page only uses ${sch.name}'s own data. Comparisons with other schools are only on the program report, which program administrators can see.`;
+}
+
+function renderSchoolGrid() {
+  const code = G.school, t = G.scTest, T = TESTS[t];
+  let g = `<thead><tr><th></th>${T.questions.map((q) => `<th>${q.n}</th>`).join("")}</tr></thead><tbody>`;
+  YEARS.forEach((yy) => {
+    g += `<tr><th>${yy}</th>`;
+    securedRates(code, yy, t).forEach((c, i) => {
+      const q = T.questions[i], tagged = PROGRAM_TAGGED.includes(q.key);
+      if (c.working < MIN_N) { g += `<td><div class="sig few${tagged ? " tagged" : ""}" data-tip="Q${q.n} ${qName(t, q.n)}, ${yy}: ${c.working} student${c.working === 1 ? "" : "s"} counted, too few to show a rate">${tagged ? "P" : ""}</div></td>`; return; }
+      const r = rate(c);
+      g += `<td><div class="sig${tagged ? " tagged" : ""}" style="background:color-mix(in oklab, var(--accent) ${10 + r * 0.9}%, var(--surface))" data-tip="Q${q.n} ${qName(t, q.n)}, ${yy}: ${c.reached} of ${c.working} secured it (${pct0(r)})${tagged ? ". Hard across the whole program" : ""}">${tagged ? "P" : ""}</div></td>`;
+    });
+    g += "</tr>";
+  });
+  $("#sc-grid").innerHTML = g + "</tbody>";
+  const hardest = securedRates(code, G.year, t).map((c, i) => ({ q: T.questions[i], c })).filter((x) => x.c.working >= MIN_N).sort((a, b) => rate(a.c) - rate(b.c)).slice(0, 5);
+  $("#sc-hardTitle").textContent = `Hardest ${T.name} questions in ${G.year}`;
+  $("#sc-hard").innerHTML = hardest.length ? hardest.map((x) =>
+    `<li><span class="tag warn">${pct0(rate(x.c))}</span><span><b>Q${x.q.n} ${qName(t, x.q.n)}</b>${tagChip(x.q.key)}: ${x.c.reached} of ${x.c.working} students secured it.${PROGRAM_TAGGED.includes(x.q.key) ? " Students across the program find this question hard, so a low rate here isn't only about your school." : ""}</span></li>`).join("")
+    : `<li><span class="tag info">None</span><span>Not enough students sat ${T.name} in both semesters of ${G.year} to show rates.</span></li>`;
+}
+function drawSchoolBars() {
+  const sts = schoolStudents(G.school);
+  drawGrowthBars($("#sc-yearChart"), YEARS.map((yy) => ({ y: yy, v: summarise(sts.filter((st) => inYear(st, yy)).map((st) => studentYear(st, yy))).avgGrowth })), SCHOOLS[G.school].name);
+}
+$("#sc-school").addEventListener("change", (e) => { G.school = e.target.value; renderSchool(); });
+$("#sc-years").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; G.year = +b.dataset.y; renderSchool(); });
+$("#sc-testPick").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  G.scTest = b.dataset.t;
+  $("#sc-testPick").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x.dataset.t === G.scTest));
+  renderSchoolGrid();
+});
+
+/* ================= PROGRAM VIEW (administrators only) ================= */
+const SIG = { BELOW: 0.10, WELL: 0.02 };
+const SIG_NAME = { ok: "Similar or better", below: "Below", well: "Well below", few: "Too few students" };
+function binomLE(k, n, p) {
+  let s = 0, c = 1;
+  for (let i = 0; i <= k; i++) { if (i > 0) c = c * (n - i + 1) / i; s += c * Math.pow(p, i) * Math.pow(1 - p, n - i); }
+  return s;
+}
+function signal(code, y, t, n) {
+  const c = securedRates(code, y, t)[n - 1], b = securedRates("ALL", y, t)[n - 1];
+  if (c.working < MIN_N || !b.working) return { s: "few", c, b };
+  const diff = rate(c) - rate(b);
+  const chance = binomLE(c.reached, c.working, Math.min(0.999, b.reached / b.working));
+  return { s: diff < 0 && chance < SIG.WELL ? "well" : diff < 0 && chance < SIG.BELOW ? "below" : "ok", c, b, diff };
+}
+function flaggedQuestions(code, y) {
+  return TEST_ORDER.flatMap((t) => TESTS[t].questions.filter((q) => ["below", "well"].includes(signal(code, y, t, q.n).s)).map((q) => ({ t, n: q.n })));
+}
+function checkIn(code, y) {
+  const rows = schoolStudents(code).filter((st) => inYear(st, y)).map((st) => studentYear(st, y));
+  const s = summarise(rows), all = summarise(STUDENTS.filter((st) => inYear(st, y)).map((st) => studentYear(st, y)));
+  const flags = flaggedQuestions(code, y);
+  const why = [];
+  if (s.counted >= 8 && s.avgGrowth <= all.avgGrowth - 8) why.push(`growth ${signed(s.avgGrowth, r1)} against ${signed(all.avgGrowth, r1)}`);
+  if (flags.length >= 2) why.push(`${flags.length} questions flagged`);
+  return { s, flags, why };
+}
+
+function renderProgram() {
+  const y = G.year, codes = Object.keys(SCHOOLS);
+  const rows = STUDENTS.filter((st) => inYear(st, y)).map((st) => ({ st, yl: ylNum(st, y), ...studentYear(st, y) }));
+  const s = summarise(rows);
+  const checks = codes.map((c) => ({ code: c, ...checkIn(c, y) }));
+  $("#pg-tabs").innerHTML = tabsHTML("program");
+  $("#pg-years").innerHTML = yearButtons(y);
+  $("#pg-meta").innerHTML = [`${codes.length} schools`, `${rows.length} students assessed in ${y}`].map((t) => `<span>${t}</span>`).join("");
+  $("#pg-stats").innerHTML = statTiles([
+    [signed(s.avgGrowth, r1), `Average framework growth per student in ${y}`],
+    [pctOf(s.improved, s.counted), "Students whose framework score went up"],
+    [s.passed, `Students who passed a test in ${y}`],
+    [`${checks.filter((c) => c.why.length).length} of ${codes.length}`, `Schools marked “Check in” for ${y}`],
+  ]);
+  $("#pg-bp").innerHTML = BP_HEAD + "<tbody>" + bpRows(rows, false) + `<tr class="total"><td><b>Whole program</b></td><td class="num">${rows.length}</td><td class="num"><b>${signed(s.avgGrowth, r1)}</b></td><td class="num">${s.improved} of ${s.counted}</td><td class="num">${s.passed}</td><td>${onEachTest(rows)}</td></tr></tbody>`;
+  drawProgramBars();
+  $("#pg-schools").innerHTML = `<thead><tr><th>School</th><th>Students</th><th>Framework growth</th><th>Went up</th><th>Passed a test</th><th>Questions flagged</th><th></th></tr></thead><tbody>` +
+    checks.sort((a, b) => b.why.length - a.why.length || a.s.avgGrowth - b.s.avgGrowth).map((c) =>
+      `<tr><td><a href="#school" data-school="${c.code}">${SCHOOLS[c.code].name}</a></td><td class="num">${c.s.n}</td><td class="num">${signed(c.s.avgGrowth, r1)}</td><td class="num">${pctOf(c.s.improved, c.s.counted)}</td><td class="num">${c.s.passed}</td><td>${c.flags.length ? c.flags.map((f) => `${TESTS[f.t].name} Q${f.n}`).join(", ") : "—"}</td><td>${c.why.length ? `<span class="status" data-tip="${c.why.join("; ")}">Check in</span>` : ""}</td></tr>`).join("") + "</tbody>";
+
+  $("#pg-testPick").innerHTML = TEST_ORDER.map((t) => `<button type="button" data-t="${t}" aria-pressed="${t === G.pgTest}">${TESTS[t].name}</button>`).join("");
+  renderProgramGrid();
+
+  $("#pg-hard").innerHTML = TEST_ORDER.flatMap((t) => securedRates("ALL", y, t).map((c, i) => ({ t, q: TESTS[t].questions[i], c })).filter((x) => x.c.working >= 20).sort((a, b) => rate(a.c) - rate(b.c)).slice(0, 2)).map((x) => {
+    const low = codes.filter((c) => { const r = securedRates(c, y, x.t)[x.q.n - 1]; return r.working >= MIN_N && rate(r) < 35; }).length;
+    const withData = codes.filter((c) => securedRates(c, y, x.t)[x.q.n - 1].working >= MIN_N).length;
+    return `<li><span class="tag warn">${pct0(rate(x.c))}</span><span><b>${TESTS[x.t].name} Q${x.q.n} ${qName(x.t, x.q.n)}</b>${PROGRAM_TAGGED.includes(x.q.key) ? ` <span class="status prog">Tagged for schools</span>` : ""}: ${x.c.reached} of ${x.c.working} students secured it across the program. Under 35% in ${low} of the ${withData} schools with enough students.</span></li>`;
+  }).join("") || `<li><span class="tag info">None</span><span>Not enough data in ${y}.</span></li>`;
+}
+
+function renderProgramGrid() {
+  const y = G.year, t = G.pgTest, T = TESTS[t], codes = Object.keys(SCHOOLS);
+  if (!G.pgCell || G.pgCell.t !== t) {
+    const first = codes.map((c) => ({ c, f: T.questions.find((q) => ["below", "well"].includes(signal(c, y, t, q.n).s)) })).find((x) => x.f);
+    G.pgCell = first ? { t, code: first.c, n: first.f.n } : { t, code: codes[0], n: 1 };
+  }
+  $("#pg-sigSub").textContent = `For each school and ${T.name} question in ${y}: the school's secured rate compared with the whole program. Select a square to see it year by year.`;
+  let g = `<thead><tr><th></th>${T.questions.map((q) => `<th>${q.n}</th>`).join("")}</tr></thead><tbody>`;
+  codes.forEach((c) => {
+    g += `<tr><th>${SCHOOLS[c].name}</th>`;
+    T.questions.forEach((q) => {
+      const s = signal(c, y, t, q.n);
+      const tt = s.s === "few" ? `${SCHOOLS[c].name}, Q${q.n}: ${s.c.working} counted, too few to compare` : `${SCHOOLS[c].name}, Q${q.n} ${qName(t, q.n)}: ${s.c.reached} of ${s.c.working} secured (${pct0(rate(s.c))}). Program ${pct0(rate(s.b))}. ${SIG_NAME[s.s]}.`;
+      const sel = G.pgCell.code === c && G.pgCell.n === q.n ? " sel" : "";
+      g += `<td><div class="sig ${s.s}${sel}" data-school="${c}" data-n="${q.n}" data-tip="${tt}" ${s.s === "few" ? "" : 'tabindex="0" role="button"'}>${s.s === "well" ? "!!" : s.s === "below" ? "!" : ""}</div></td>`;
+    });
+    g += "</tr>";
+  });
+  $("#pg-grid").innerHTML = g + "</tbody>";
+  renderProgramDetail();
+}
+function renderProgramDetail() {
+  const { code, n, t } = G.pgCell;
+  $("#pg-detailTitle").textContent = `${SCHOOLS[code].name}, ${TESTS[t].name} Q${n} ${qName(t, n)}`;
+  const row = (cls, label, x) => { const r = rate(x); return `<div class="cmp-row ${cls}"><span class="who-lbl">${label}</span><div class="track"><div class="fill" style="width:${r == null ? 0 : r}%"></div></div><span class="val">${r == null ? "No students" : `${pct0(r)} (${x.reached} of ${x.working})`}</span></div>`; };
+  $("#pg-detail").innerHTML = YEARS.map((yy) => {
+    const s = signal(code, yy, t, n);
+    const tag = ["below", "well"].includes(s.s) ? ` <span class="status ${s.s === "well" ? "crit" : "warn"}">${SIG_NAME[s.s]}</span>` : "";
+    return `<div class="cmp-year"><b>${yy}</b><div class="cmp-rows">${row("school", SCHOOLS[code].name + tag, s.c)}${row("bench", "Whole program", s.b)}${s.s === "few" ? `<span class="sub">Fewer than ${MIN_N} students counted, so it isn't compared.</span>` : ""}</div></div>`;
+  }).join("");
+  $("#pg-grid").querySelectorAll(".sig").forEach((el) => el.classList.toggle("sel", el.dataset.school === code && +el.dataset.n === n));
+}
+function drawProgramBars() {
+  const codes = Object.keys(SCHOOLS);
+  const g = (sts, yy) => summarise(sts.filter((st) => inYear(st, yy)).map((st) => studentYear(st, yy))).avgGrowth;
+  drawGrowthBars($("#pg-yearChart"), YEARS.map((yy) => ({ y: yy, v: g(STUDENTS, yy), dots: codes.map((c) => ({ name: SCHOOLS[c].name, v: g(schoolStudents(c), yy) })).filter((d) => d.v != null) })), "Whole program");
+}
+$("#pg-years").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; G.year = +b.dataset.y; G.pgCell = null; renderProgram(); });
+$("#pg-testPick").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; G.pgTest = b.dataset.t; G.pgCell = null; $("#pg-testPick").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x.dataset.t === G.pgTest)); renderProgramGrid(); });
+function pickProgramCell(e) { const el = e.target.closest(".sig:not(.few)"); if (!el) return; G.pgCell = { t: G.pgTest, code: el.dataset.school, n: +el.dataset.n }; renderProgramDetail(); }
+$("#pg-grid").addEventListener("click", pickProgramCell);
+$("#pg-grid").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pickProgramCell(e); } });
+
+/* ================= SIGNAL CALCULATOR (program footnote) ================= */
+function runCalc() {
+  const n = Math.max(0, Math.round(+$("#cr-n").value || 0)), k = Math.max(0, Math.round(+$("#cr-k").value || 0));
+  const p = Math.min(99, Math.max(1, +$("#cr-p").value || 0)) / 100, out = $("#cr-out");
+  if (k > n) { out.innerHTML = "<p>“Secured it” can't be more than the number of students counted.</p>"; return; }
+  if (n < MIN_N) { out.innerHTML = `<p><span class="status info">Not compared</span> Fewer than ${MIN_N} students counted, so no rate is compared.</p>`; return; }
+  const school = k / n * 100, chance = binomLE(k, n, p), oneIn = chance > 0 ? Math.round(1 / chance) : Infinity;
+  const result = school >= p * 100 ? "ok" : chance < SIG.WELL ? "well" : chance < SIG.BELOW ? "below" : "ok";
+  out.innerHTML = `<p><b>School secured rate:</b> ${k} of ${n} = ${Math.round(school)}%. <b>Program:</b> ${Math.round(p * 100)}%.</p>
+    <p><b>Chance of ${k} or fewer, if the school matched the program:</b> ${chance < 0.001 ? chance.toExponential(1) : chance.toFixed(3)}${isFinite(oneIn) ? ` (about 1 in ${oneIn.toLocaleString("en-AU")})` : ""}.</p>
+    <p><b>Result:</b> <span class="status ${result === "well" ? "crit" : result === "below" ? "warn" : "info"}">${{ ok: "Not flagged", below: "Below", well: "Well below" }[result]}</span> ${result === "ok" ? (school >= p * 100 ? "The school is at or above the program rate." : "The gap could easily be luck with this many students.") : result === "below" ? "Less than a 1 in 10 chance it's luck." : "Less than a 1 in 50 chance it's luck."}</p>`;
+}
+["#cr-n", "#cr-k", "#cr-p"].forEach((id) => $(id).addEventListener("input", runCalc));
+runCalc();
+
+/* ================= WHO IS VIEWING AND ROUTING ================= */
+// School staff see their own school only. Program administrators see every school and the program report,
+// but never an individual student.
+$("#role").innerHTML = `<option value="admin">Program administrator</option>` + ["A", "B", "C"].map((c) => `<option value="${c}">Staff at ${SCHOOLS[c].name}</option>`).join("");
+$("#role").value = G.role;
+$("#role").addEventListener("change", (e) => {
+  G.role = e.target.value;
+  if (!isAdmin()) G.school = G.role;
+  if (location.hash === "#program" && !isAdmin()) location.hash = "#school"; else route();
+});
+function route() {
+  const h = location.hash.slice(1), st = BY_ID[h];
+  tip.hidden = true;
+  if (st && (isAdmin() || !canSee(st.school))) { location.hash = "#teacher"; return; }
+  if (h === "program" && !isAdmin()) { location.hash = "#school"; return; }
+  if (!st) G.mode = ["yeargroup", "school", "program"].includes(h) ? h : "teacher";
+  const view = st ? "student" : G.mode === "school" ? "school" : G.mode === "program" ? "program" : "group";
+  $("#groupView").hidden = view !== "group";
+  $("#schoolView").hidden = view !== "school";
+  $("#programView").hidden = view !== "program";
+  $("#studentView").hidden = view !== "student";
+  if (view === "student") renderStudent(st); else if (view === "school") renderSchool(); else if (view === "program") renderProgram(); else renderGroup();
+  window.scrollTo(0, 0);
+}
+addEventListener("hashchange", route);
+route();
+let rt;
+addEventListener("resize", () => {
+  clearTimeout(rt);
+  rt = setTimeout(() => {
+    if (!$("#studentView").hidden) drawJourney();
+    else if (!$("#schoolView").hidden) drawSchoolBars();
+    else if (!$("#programView").hidden) drawProgramBars();
+  }, 120);
+});
+</script>
