@@ -647,7 +647,7 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
     <div class="panel-head">
       <div class="titles">
         <h2 id="pg-schoolsTitle">Schools</h2>
-        <p class="sub">Schools marked “Check in” have 2 or more flagged questions, or students whose framework growth was 8 points or more below the program average. Select a school to open its report.</p>
+        <p class="sub">Schools marked “Check in” have 2 or more flagged questions, or students whose framework growth was 6 points or more below the program average. Select a school to open its report.</p>
       </div>
     </div>
     <div class="tbl-wrap"><table class="class-table" id="pg-schools"></table></div>
@@ -700,7 +700,7 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
       </div>
       <div class="rule">
         <div class="rule-head"><span class="status">Check in</span><b>School to check in with</b><span class="where">Schools table</span></div>
-        <p><span class="lbl">Rule</span>2 or more flagged questions across the three tests, or at least 8 students with a framework growth figure whose average is 8 points or more below the program's.</p>
+        <p><span class="lbl">Rule</span>2 or more flagged questions across the three tests, or at least 8 students with a framework growth figure whose average is 6 points or more below the program's.</p>
       </div>
       <div class="rule">
         <div class="rule-head"><b>Business plan measure</b><span class="where">Business plan measure by year level</span></div>
@@ -1180,7 +1180,7 @@ $("#s-datePick").addEventListener("click", (e) => {
 /* ================= GROUP VIEW (teacher or year group) ================= */
 // mode "teacher": one class. mode "yeargroup": every student at one year level, whatever class or test they are on.
 // test: "all" uses the framework score; "F", "Y1" or "Y2" narrows everything to students who sat that test.
-const G = { role: "A", mode: "teacher", school: "A", room: "Room 2", yl: 2, year: 2026, test: "all", scTest: "F", pgTest: "F", pgCell: null };
+const G = { role: "A", mode: "teacher", school: "A", room: "Room 2", yl: 1, year: 2026, test: "all", scTest: "F", pgTest: "F", pgCell: null };
 const isYG = () => G.mode === "yeargroup";
 const isAdmin = () => G.role === "admin";
 const canSee = (code) => isAdmin() || G.role === code;
@@ -1190,7 +1190,7 @@ function groupStudents(y) {
   return STUDENTS.filter((st) => st.school === G.school && inYear(st, y) && (isYG() ? ylNum(st, y) === G.yl : roomOf(st, y) === G.room));
 }
 const satTest = (st, y, t) => st.assessments.some((a) => a.year === y && a.test === t);
-const onEachTest = (rows) => TEST_ORDER.map((t) => { const n = rows.filter((r) => r.last && r.last.test === t).length; return n ? `${TESTS[t].name} ${n}` : null; }).filter(Boolean).join(" · ") || "—";
+const onEachTest = (rows) => TEST_ORDER.map((t) => { const n = rows.filter((r) => r.last && r.last.test === t).length; return n ? `${TESTS[t].name}: ${n}` : null; }).filter(Boolean).join(" · ") || "—";
 
 // Business plan rows: one per year level.
 function bpRows(rows, linkYG) {
@@ -1271,7 +1271,7 @@ function renderGroup() {
     ? `Average framework growth for ${ylName(G.yl)} students in ${y}, across every test they sat.`
     : `Average framework growth in ${y} for each year level in this class, across every test.`;
   $("#g-bpLine").innerHTML = isYG()
-    ? `<b class="num">${bp.counted ? signed(bp.avgGrowth, r1) : "—"}</b><span>framework points per ${ylName(G.yl)} student in ${y}, from ${bp.counted} students on ${onEachTest(allRows)}</span>`
+    ? `<b class="num">${bp.counted ? signed(bp.avgGrowth, r1) : "—"}</b><span>framework points per ${ylName(G.yl)} student in ${y}, from ${bp.counted} students. Latest test: ${onEachTest(allRows)}.</span>`
     : "";
   $("#g-bpLine").hidden = !isYG();
   $("#g-bpTable").innerHTML = BP_HEAD + "<tbody>" + bpRows(allRows, false) + "</tbody>";
@@ -1514,7 +1514,7 @@ function checkIn(code, y) {
   const s = summarise(rows), all = summarise(STUDENTS.filter((st) => inYear(st, y)).map((st) => studentYear(st, y)));
   const flags = flaggedQuestions(code, y);
   const why = [];
-  if (s.counted >= 8 && s.avgGrowth <= all.avgGrowth - 8) why.push(`growth ${signed(s.avgGrowth, r1)} against ${signed(all.avgGrowth, r1)}`);
+  if (s.counted >= 8 && s.avgGrowth <= all.avgGrowth - 6) why.push(`growth ${signed(s.avgGrowth, r1)} against ${signed(all.avgGrowth, r1)}`);
   if (flags.length >= 2) why.push(`${flags.length} questions flagged`);
   return { s, flags, why };
 }
