@@ -665,7 +665,7 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
       <span><i class="sig-key ok"></i>Similar to or better than the program</span>
       <span><i class="sig-key below">!</i>Below: behind, with less than a 1 in 10 chance it's luck</span>
       <span><i class="sig-key well">!!</i>Well below: behind, with less than a 1 in 50 chance it's luck</span>
-      <span><i class="sig-key few"></i>Fewer than 3 students</span>
+      <span><i class="sig-key few"></i>Fewer than 5 students</span>
     </div>
     <div class="tbl-wrap"><table class="sig-grid" id="pg-grid"></table></div>
     <div class="subhead"><h3 id="pg-detailTitle"></h3></div>
@@ -692,7 +692,7 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
         <div class="rule-head"><span class="sig-key below">!</span><span class="sig-key well">!!</span><b>Question signals</b><span class="where">Question signals by school</span></div>
         <p><span class="lbl">Rule</span>A question is flagged for a school when all three of these are true:</p>
         <ol class="steps">
-          <li>At least 3 of the school's students were counted for its secured rate.</li>
+          <li>At least 5 of the school's students were counted for its secured rate. With 3 or 4, one or two stuck students can set off flags across a whole test.</li>
           <li>The school's secured rate is lower than the whole program's.</li>
           <li>The gap is too big to put down to chance. Suppose the school's students were exactly as likely to secure the question as the program average. What's the chance of a result this low, or lower, just by luck? <b>Below</b>: less than 1 in 10. <b>Well below</b>: less than 1 in 50.</li>
         </ol>
@@ -710,7 +710,7 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
     <div class="fn-part">
       <h3>Try the question signal test</h3>
       <div class="calc">
-        <label class="field" for="cr-n">Students counted <input type="number" id="cr-n" min="3" max="200" value="12"></label>
+        <label class="field" for="cr-n">Students counted <input type="number" id="cr-n" min="5" max="200" value="12"></label>
         <label class="field" for="cr-k">Of those, secured it <input type="number" id="cr-k" min="0" max="200" value="3"></label>
         <label class="field" for="cr-p">Program secured rate (%) <input type="number" id="cr-p" min="1" max="99" value="50"></label>
       </div>
@@ -921,18 +921,18 @@ const roomLabel = (room, school) => { const r = SCHOOLS[school].rooms[room]; ret
 
 const logistic = (x) => 1 / (1 + Math.exp(-x));
 const QDIFF = {};
-Object.values(TESTS).forEach((t) => { const r = mulberry32(seedOf("q" + t.id)); t.questions.forEach((q) => { QDIFF[q.key] = (r() - 0.5) * 36; }); });
+Object.values(TESTS).forEach((t) => { const r = mulberry32(seedOf("q" + t.id)); t.questions.forEach((q) => { QDIFF[q.key] = (r() - 0.5) * 20; }); });
 function expectedPct(theta, t) {
   const T = TESTS[t];
-  return T.questions.reduce((s, q) => s + q.max * logistic((theta - T.c - QDIFF[q.key]) / 9), 0) / T.total * 100;
+  return T.questions.reduce((s, q) => s + q.max * logistic((theta - T.c - QDIFF[q.key]) / 4), 0) / T.total * 100;
 }
 function sitTest(theta, t, school, year, rng) {
   const T = TESTS[t], sch = SCHOOLS[school];
   const scores = T.questions.map((q) => {
-    const hardYears = sch.hard[q.key] || PROGRAM_HARD[q.key];
-    const extra = (sch.hard[q.key] && sch.hard[q.key].includes(year) ? 22 : 0) + (PROGRAM_HARD[q.key] && PROGRAM_HARD[q.key].includes(year) ? 22 : 0);
-    const f = Math.min(1, Math.max(0, logistic((theta - T.c - QDIFF[q.key] - extra) / 9) + (rng() - 0.5) * 0.25));
-    return Math.round(f * q.max);
+    const f = Math.min(1, Math.max(0, logistic((theta - T.c - QDIFF[q.key]) / 4) + (rng() - 0.5) * 0.06));
+    // A question this school (or the whole program) finds hard is rarely completed to full marks.
+    const hard = ((sch.hard[q.key] && sch.hard[q.key].includes(year)) || (PROGRAM_HARD[q.key] && PROGRAM_HARD[q.key].includes(year))) && rng() < 0.9;
+    return hard ? Math.min(Math.round(f * q.max), q.max - 1) : Math.round(f * q.max);
   });
   const score = scores.reduce((s, v) => s + v, 0);
   return { scores, score, pct: score / T.total * 100 };
@@ -950,7 +950,7 @@ function buildSchoolStudents(code) {
         id: code.toLowerCase() + String(k + 1).padStart(2, "0"), name: madeUpName(rng), school: code, yl,
         tool: rng() < 0.12 ? (rng() < 0.5 ? "PODD book" : "Device") : null,
         split: SPLITS[yl] ? SPLITS[yl][j] : undefined,
-        theta0: 12 + startYl * 16 + (rng() - 0.5) * 30, g: (7 + rng() * 11) * SCHOOLS[code].g, first,
+        theta0: 28 + startYl * 16 + (rng() - 0.5) * 30, g: (7 + rng() * 11) * SCHOOLS[code].g, first,
       };
       // Start on the first test the student is not already passing.
       let test = TEST_ORDER.find((t) => expectedPct(st.theta0, t) < PASS) || "Y2";
@@ -1497,9 +1497,11 @@ function binomLE(k, n, p) {
   for (let i = 0; i <= k; i++) { if (i > 0) c = c * (n - i + 1) / i; s += c * Math.pow(p, i) * Math.pow(1 - p, n - i); }
   return s;
 }
+// Comparing schools needs at least 5 students on a question: with 3 or 4, one or two stuck students can flag a whole test.
+const MIN_SIG = 5;
 function signal(code, y, t, n) {
   const c = securedRates(code, y, t)[n - 1], b = securedRates("ALL", y, t)[n - 1];
-  if (c.working < MIN_N || !b.working) return { s: "few", c, b };
+  if (c.working < MIN_SIG || !b.working) return { s: "few", c, b };
   const diff = rate(c) - rate(b);
   const chance = binomLE(c.reached, c.working, Math.min(0.999, b.reached / b.working));
   return { s: diff < 0 && chance < SIG.WELL ? "well" : diff < 0 && chance < SIG.BELOW ? "below" : "ok", c, b, diff };
@@ -1541,8 +1543,8 @@ function renderProgram() {
   renderProgramGrid();
 
   $("#pg-hard").innerHTML = TEST_ORDER.flatMap((t) => securedRates("ALL", y, t).map((c, i) => ({ t, q: TESTS[t].questions[i], c })).filter((x) => x.c.working >= 20).sort((a, b) => rate(a.c) - rate(b.c)).slice(0, 2)).map((x) => {
-    const low = codes.filter((c) => { const r = securedRates(c, y, x.t)[x.q.n - 1]; return r.working >= MIN_N && rate(r) < 35; }).length;
-    const withData = codes.filter((c) => securedRates(c, y, x.t)[x.q.n - 1].working >= MIN_N).length;
+    const low = codes.filter((c) => { const r = securedRates(c, y, x.t)[x.q.n - 1]; return r.working >= MIN_SIG && rate(r) < 35; }).length;
+    const withData = codes.filter((c) => securedRates(c, y, x.t)[x.q.n - 1].working >= MIN_SIG).length;
     return `<li><span class="tag warn">${pct0(rate(x.c))}</span><span><b>${TESTS[x.t].name} Q${x.q.n} ${qName(x.t, x.q.n)}</b>${PROGRAM_TAGGED.includes(x.q.key) ? ` <span class="status prog">Tagged for schools</span>` : ""}: ${x.c.reached} of ${x.c.working} students secured it across the program. Under 35% in ${low} of the ${withData} schools with enough students.</span></li>`;
   }).join("") || `<li><span class="tag info">None</span><span>Not enough data in ${y}.</span></li>`;
 }
@@ -1575,7 +1577,7 @@ function renderProgramDetail() {
   $("#pg-detail").innerHTML = YEARS.map((yy) => {
     const s = signal(code, yy, t, n);
     const tag = ["below", "well"].includes(s.s) ? ` <span class="status ${s.s === "well" ? "crit" : "warn"}">${SIG_NAME[s.s]}</span>` : "";
-    return `<div class="cmp-year"><b>${yy}</b><div class="cmp-rows">${row("school", SCHOOLS[code].name + tag, s.c)}${row("bench", "Whole program", s.b)}${s.s === "few" ? `<span class="sub">Fewer than ${MIN_N} students counted, so it isn't compared.</span>` : ""}</div></div>`;
+    return `<div class="cmp-year"><b>${yy}</b><div class="cmp-rows">${row("school", SCHOOLS[code].name + tag, s.c)}${row("bench", "Whole program", s.b)}${s.s === "few" ? `<span class="sub">Fewer than ${MIN_SIG} students counted, so it isn't compared.</span>` : ""}</div></div>`;
   }).join("");
   $("#pg-grid").querySelectorAll(".sig").forEach((el) => el.classList.toggle("sel", el.dataset.school === code && +el.dataset.n === n));
 }
@@ -1595,7 +1597,7 @@ function runCalc() {
   const n = Math.max(0, Math.round(+$("#cr-n").value || 0)), k = Math.max(0, Math.round(+$("#cr-k").value || 0));
   const p = Math.min(99, Math.max(1, +$("#cr-p").value || 0)) / 100, out = $("#cr-out");
   if (k > n) { out.innerHTML = "<p>“Secured it” can't be more than the number of students counted.</p>"; return; }
-  if (n < MIN_N) { out.innerHTML = `<p><span class="status info">Not compared</span> Fewer than ${MIN_N} students counted, so no rate is compared.</p>`; return; }
+  if (n < MIN_SIG) { out.innerHTML = `<p><span class="status info">Not compared</span> Fewer than ${MIN_SIG} students counted, so no rate is compared.</p>`; return; }
   const school = k / n * 100, chance = binomLE(k, n, p), oneIn = chance > 0 ? Math.round(1 / chance) : Infinity;
   const result = school >= p * 100 ? "ok" : chance < SIG.WELL ? "well" : chance < SIG.BELOW ? "below" : "ok";
   out.innerHTML = `<p><b>School secured rate:</b> ${k} of ${n} = ${Math.round(school)}%. <b>Program:</b> ${Math.round(p * 100)}%.</p>
