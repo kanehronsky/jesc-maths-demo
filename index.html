@@ -333,6 +333,15 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
 .chip.test-F, .chip.test-Y1, .chip.test-Y2 { font-weight: 700; }
 .target { min-width: 150px; max-width: 220px; }
 .hero .level .big { display: flex; flex-direction: column; gap: 4px; font-size: 18px; }
+.num-btn { font: inherit; font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--accent); background: none; border: 0; border-bottom: 2px dashed var(--accent); padding: 0 2px; cursor: pointer; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.num-btn:hover { background: color-mix(in oklab, var(--accent) 10%, var(--surface)); }
+.num-btn.small { font-family: var(--font-body); font-size: 14px; border-bottom-width: 1px; }
+dialog#pass-dialog { width: min(900px, calc(100vw - 32px)); max-height: calc(100vh - 64px); overflow: auto; border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: var(--surface); color: var(--ink); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25); }
+dialog#pass-dialog::backdrop { background: rgba(10, 20, 24, 0.45); }
+dialog#pass-dialog[open] { display: flex; flex-direction: column; gap: 14px; }
+.dlg-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.dlg-close { font: inherit; font-size: 24px; line-height: 1; width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; flex: none; }
+.dlg-close:hover { color: var(--ink); border-color: var(--ink-2); }
 @media (max-width: 720px) {
   .db-row, .bar-row { grid-template-columns: 1fr 70px !important; }
   .db-row .db-track, .bar-row .track { grid-column: 1 / -1; grid-row: 2; }
@@ -821,6 +830,17 @@ tr.total td { border-top: 2px solid var(--line); background: var(--track); }
     </div>
   </aside>
 </div>
+<dialog id="pass-dialog" aria-labelledby="pass-title">
+  <div class="dlg-head">
+    <div class="titles">
+      <h2 id="pass-title">Passed</h2>
+      <p class="sub" id="pass-sub"></p>
+    </div>
+    <button type="button" class="dlg-close" id="pass-close" aria-label="Close">×</button>
+  </div>
+  <div id="pass-body"></div>
+  <p class="sub" id="pass-count"></p>
+</dialog>
 <div id="tip" hidden></div>
 
 <script>
@@ -1106,7 +1126,7 @@ function renderStudent(st) {
   $("#s-name").textContent = st.name;
   $("#s-testBadge").textContent = st.completed ? "Completed" : TESTS[latest.passed ? nextTest(latest.test) : latest.test].name;
   $("#s-back").href = "#" + G.mode;
-  $("#s-back").textContent = "← " + (G.mode === "yeargroup" ? ylName(G.yl) : roomLabel(G.room, G.school)) + ` (${G.year})`;
+  $("#s-back").textContent = "← " + (G.mode === "school" ? SCHOOLS[G.school].name : G.mode === "yeargroup" ? ylName(G.yl) : roomLabel(G.room, G.school)) + ` (${G.year})`;
   $("#s-meta").innerHTML = [
     ylName(latest.yearLevel), SCHOOLS[st.school].name, `Class: ${roomLabel(latest.cls, st.school)}`,
     `${A.length} assessments since ${fmtDate(A[0].date)}`,
@@ -1475,7 +1495,7 @@ function renderSchool() {
   $("#sc-stats").innerHTML = statTiles([
     [s.counted ? signed(s.avgGrowth, r1) : "—", `Average framework growth per student in ${y}`],
     [s.counted ? pctOf(s.improved, s.counted) : "—", "Students whose framework score went up"],
-    [s.passed, `Students who passed a test in ${y}`],
+    [`<button type="button" class="num-btn" data-passed="all" aria-haspopup="dialog">${s.passed}</button>`, `Students who passed a test in ${y}. Select the number to see who.`],
     [sts.length, `Students assessed in ${y}`],
   ]);
   $("#sc-bp").innerHTML = BP_HEAD + "<tbody>" + bpRows(rows, true) + `<tr class="total"><td><b>Whole school</b></td><td class="num">${rows.length}</td><td class="num"><b>${s.counted ? signed(s.avgGrowth, r1) : "—"}</b></td><td class="num">${s.improved} of ${s.counted}</td><td class="num">${s.passed}</td><td>${onEachTest(rows)}</td></tr></tbody>`;
@@ -1490,7 +1510,7 @@ function renderSchool() {
       const semAvg = (sem) => { const as = sat.map((r) => r.as.find((a) => a.sem === sem && a.test === t)).filter(Boolean); return as.length ? `${pct0(avg(as.map((a) => a.pct)))} <span class="sub">(${as.length})</span>` : "—"; };
       const latest = sat.map((r) => r.as.filter((a) => a.test === t).pop());
       const c = { yellow: 0, green: 0, red: 0 }; latest.forEach((a) => c[band(a.pct)]++);
-      return `<tr><td>${TESTS[t].name}</td><td class="num">${sat.length}</td><td>${semAvg("Semester One")}</td><td>${semAvg("Semester Two")}</td><td class="num">${sat.filter((r) => r.as.some((a) => a.test === t && a.passed)).length}</td><td>${sat.length ? ["yellow", "green", "red"].map((b) => `<span class="band-chip ${b}">${c[b]}</span>`).join(" ") : "—"}</td></tr>`;
+      return `<tr><td>${TESTS[t].name}</td><td class="num">${sat.length}</td><td>${semAvg("Semester One")}</td><td>${semAvg("Semester Two")}</td><td class="num">${(() => { const n = sat.filter((r) => r.as.some((a) => a.test === t && a.passed)).length; return n ? `<button type="button" class="num-btn small" data-passed="${t}" aria-haspopup="dialog">${n}</button>` : 0; })()}</td><td>${sat.length ? ["yellow", "green", "red"].map((b) => `<span class="band-chip ${b}">${c[b]}</span>`).join(" ") : "—"}</td></tr>`;
     }).join("") + "</tbody>";
 
   $("#sc-testPick").innerHTML = TEST_ORDER.map((t) => `<button type="button" data-t="${t}" aria-pressed="${t === G.scTest}">${TESTS[t].name}</button>`).join("");
@@ -1530,6 +1550,57 @@ function drawSchoolBars() {
   const sts = schoolStudents(G.school);
   drawGrowthBars($("#sc-yearChart"), YEARS.map((yy) => ({ y: yy, v: summarise(sts.filter((st) => inYear(st, yy)).map((st) => studentYear(st, yy))).avgGrowth })), SCHOOLS[G.school].name);
 }
+/* ---------- Who passed (pop-up from the school report) ---------- */
+// One row per pass: a student who passed two tests in a year appears twice.
+function passEvents(code, y, test) {
+  const out = [];
+  schoolStudents(code).forEach((st) => {
+    st.assessments.forEach((a, i) => {
+      if (a.year !== y || !a.passed || (test !== "all" && a.test !== test)) return;
+      const next = nextTest(a.test), after = st.assessments[i + 1];
+      out.push({ st, a, next, after: after && after.test === next ? after : null });
+    });
+  });
+  return out.sort((p, q) => TEST_ORDER.indexOf(p.a.test) - TEST_ORDER.indexOf(q.a.test) || p.a.round - q.a.round || p.st.name.localeCompare(q.st.name));
+}
+function openPassed(test) {
+  const y = G.year, code = G.school, ev = passEvents(code, y, test);
+  const what = test === "all" ? "a test" : TESTS[test].name;
+  $("#pass-title").textContent = `Passed ${what} in ${y}`;
+  $("#pass-sub").textContent = `${SCHOOLS[code].name}. A pass is 90% or higher, and the student sits the next test at their next assessment.`;
+  if (isAdmin()) {
+    // Administrators never see individual students: show counts only.
+    const groups = {};
+    ev.forEach((e) => { const k = `${e.a.test}|${e.next || "done"}`; (groups[k] = groups[k] || []).push(e); });
+    $("#pass-body").innerHTML = `<p class="sub">Program administrators see how many students passed, not who. Names are only shown to school staff.</p>
+      <div class="tbl-wrap"><table class="class-table"><thead><tr><th>Passed</th><th>Moved on to</th><th>Students</th><th>By year level</th></tr></thead><tbody>` +
+      Object.entries(groups).map(([k, list]) => {
+        const [t, nx] = k.split("|");
+        const lv = {}; list.forEach((e) => { lv[e.a.yearLevel] = (lv[e.a.yearLevel] || 0) + 1; });
+        return `<tr><td>${TESTS[t].name}</td><td>${nx === "done" ? "Completed the framework" : TESTS[nx].name}</td><td class="num">${list.length}</td><td>${Object.keys(lv).sort((a, b) => a - b).map((n) => `${ylName(+n)}: ${lv[n]}`).join(" · ")}</td></tr>`;
+      }).join("") + "</tbody></table></div>";
+  } else {
+    $("#pass-body").innerHTML = ev.length ? `<div class="tbl-wrap"><table class="class-table"><thead><tr><th>Student</th><th>Year level</th><th>Class</th><th>Passed</th><th>When</th><th>Score</th><th>Moved on to</th></tr></thead><tbody>` +
+      ev.map((e) => {
+        const moved = !e.next ? "Completed the framework"
+          : e.after ? `${TESTS[e.next].name} <span class="sub">· ${e.after.sem} ${e.after.year}: </span>${bandChip(e.after.pct)}`
+          : `${TESTS[e.next].name} <span class="sub">· from their next assessment</span>`;
+        return `<tr><td><a href="#${e.st.id}">${e.st.name}</a></td><td>${ylName(e.a.yearLevel)}</td><td>${roomLabel(e.a.cls, code)}</td><td>${TESTS[e.a.test].name}</td><td>${e.a.sem}</td><td>${bandChip(e.a.pct)} <span class="sub">${e.a.score}/${TESTS[e.a.test].total}</span></td><td>${moved}</td></tr>`;
+      }).join("") + "</tbody></table></div>" : `<p class="sub">No students passed ${what} in ${y}.</p>`;
+  }
+  $("#pass-count").textContent = `${ev.length} pass${ev.length === 1 ? "" : "es"}` + (new Set(ev.map((e) => e.st.id)).size !== ev.length ? ` by ${new Set(ev.map((e) => e.st.id)).size} students (some passed two tests this year)` : "");
+  const dlg = $("#pass-dialog");
+  if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
+}
+$("#schoolView").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-passed]"); if (b) openPassed(b.dataset.passed);
+});
+$("#pass-close").addEventListener("click", () => $("#pass-dialog").close());
+$("#pass-dialog").addEventListener("click", (e) => {
+  if (e.target === $("#pass-dialog")) $("#pass-dialog").close(); // a click on the dimmed background closes it
+  if (e.target.closest("a[href^='#']")) $("#pass-dialog").close();
+});
+
 $("#sc-school").addEventListener("change", (e) => { G.school = e.target.value; renderSchool(); });
 $("#sc-years").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; G.year = +b.dataset.y; renderSchool(); });
 $("#sc-testPick").addEventListener("click", (e) => {
