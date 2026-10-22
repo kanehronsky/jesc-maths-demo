@@ -861,7 +861,7 @@ const TESTS = {
     ["Simple AB patterns", [["Simple AB patterns", 4]]],
     ["Sorting notes and coins", [["Sorting notes and coins", 9]]],
   ] },
-  Y1: { id: "Y1", name: "Year 1", offset: 100, c: 95, sections: [
+  Y1: { id: "Y1", name: "Year 1", offset: 100, c: 76, sections: [
     ["Number sequences to and from 120", [["Number sequences to and from 120", 5]]],
     ["Read and write numbers to 120", [["Read", 5], ["Write", 5]]],
     ["Two-digit numbers are made of 10s and 1s", [["MAB student", 5], ["MAB teacher", 5]]],
@@ -875,7 +875,7 @@ const TESTS = {
     ["Count and order Australian currency", [["Coins ordered", 1], ["Notes ordered", 1], ["Naming notes and coins", 11]]],
     ["Patterns in numbers and objects", [["Number patterns", 4], ["Shape patterns", 4]]],
   ] },
-  Y2: { id: "Y2", name: "Year 2", offset: 200, c: 150, sections: [
+  Y2: { id: "Y2", name: "Year 2", offset: 200, c: 112, sections: [
     ["Number sequences by 2s, 3s, 5s and 10s", [["Number sequences by 2s, 3s, 5s and 10s", 7]]],
     ["Recognise and order numbers to 1020", [["Recognise and order numbers to 1020", 5]]],
     ["Partition and group numbers to 1000", [["Partition and group numbers to 1000", 5]]],
@@ -966,7 +966,7 @@ const roomLabel = (room, school) => { const r = SCHOOLS[school].rooms[room]; ret
 
 const logistic = (x) => 1 / (1 + Math.exp(-x));
 const QDIFF = {};
-Object.values(TESTS).forEach((t) => { const r = mulberry32(seedOf("q" + t.id)); t.questions.forEach((q) => { QDIFF[q.key] = (r() - 0.5) * 20; }); });
+Object.values(TESTS).forEach((t) => { const r = mulberry32(seedOf("q" + t.id)); t.questions.forEach((q) => { QDIFF[q.key] = (r() - 0.5) * 36; }); });
 function expectedPct(theta, t) {
   const T = TESTS[t];
   return T.questions.reduce((s, q) => s + q.max * logistic((theta - T.c - QDIFF[q.key]) / 4), 0) / T.total * 100;
@@ -995,7 +995,7 @@ function buildSchoolStudents(code) {
         id: code.toLowerCase() + String(k + 1).padStart(2, "0"), name: madeUpName(rng), school: code, yl,
         tool: rng() < 0.12 ? (rng() < 0.5 ? "PODD book" : "Device") : null,
         split: SPLITS[yl] ? SPLITS[yl][j] : undefined,
-        theta0: 28 + startYl * 16 + (rng() - 0.5) * 30, g: (7 + rng() * 11) * SCHOOLS[code].g, first,
+        theta0: 22 + startYl * 12 + (rng() - 0.5) * 30, g: (7 + rng() * 11) * SCHOOLS[code].g, first,
       };
       // Start on the first test the student is not already passing.
       let test = TEST_ORDER.find((t) => expectedPct(st.theta0, t) < PASS) || "Y2";
