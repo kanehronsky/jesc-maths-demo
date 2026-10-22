@@ -986,13 +986,15 @@ function sitTest(theta, t, school, year, rng) {
 function buildSchoolStudents(code) {
   const rng = mulberry32(seedOf("jesc" + code));
   const out = [];
+  const used = new Set();
+  const uniqueName = () => { let n; do { n = madeUpName(rng); } while (used.has(n)); used.add(n); return n; };
   let k = 0;
   for (let yl = 0; yl <= 6; yl++) {
     for (let j = 0; j < COHORT[yl]; j++) {
       const first = yl === 0 ? 4 : yl === 1 ? 2 : 0;
       const startYl = yl - (2026 - ROUNDS[first].year);
       const st = {
-        id: code.toLowerCase() + String(k + 1).padStart(2, "0"), name: madeUpName(rng), school: code, yl,
+        id: code.toLowerCase() + String(k + 1).padStart(2, "0"), name: uniqueName(), school: code, yl,
         tool: rng() < 0.12 ? (rng() < 0.5 ? "PODD book" : "Device") : null,
         split: SPLITS[yl] ? SPLITS[yl][j] : undefined,
         theta0: 22 + startYl * 12 + (rng() - 0.5) * 30, g: (7 + rng() * 11) * SCHOOLS[code].g, first,
